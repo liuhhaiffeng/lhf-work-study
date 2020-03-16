@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cd $UXSRCHOME/src
+
+find . -name *rac* -type d|grep -v track

@@ -1,0 +1,42 @@
+#!/bin/bash
+
+cd $PGSRCHOME
+
+if [ $# -eq 0 ]; 
+then
+    grep_target=`cat $HOME/.myscript/grep_target.txt`
+else
+    grep_target=$1
+fi
+
+result=`find . -name "*.c" |xargs grep -in "$grep_target"|grep -Ev $GREPFILTER|grep -in "$grep_target"`
+
+result_file_path_all=`echo "$result"|awk -F ":" '{print $2}'`
+result_file_path=`echo "$result"|awk -F ":" '{print $2}'|uniq`
+if [ -z "$result_file_path" ]
+then
+    uniq_file_path_cnt=0
+else
+    uniq_file_path_cnt=`echo "$result_file_path"|wc -l`
+fi
+
+# result为空时, wc -l的结果却为1, 不正确,需要特殊处理
+if [ -z "$result" ] 
+then
+    result_cnt=0
+else
+    result_cnt=`echo "$result"|wc -l`
+fi
+
+echo $MYPREFIX1 [`date +%H:%M:%S`] "find count is:" $result_cnt "from" $uniq_file_path_cnt "files"
+find . -name "*.c" |xargs grep -in "$grep_target"|grep -Ev $GREPFILTER|grep -in "$grep_target"  # 文件路径和行号高亮保留
+echo $MYPREFIX2 [`date +%H:%M:%S`] "find count is:" $result_cnt "from" $uniq_file_path_cnt "files"
+
+cd ~/.myscript
+# 注意因为参数的内容中间可能有空格和回车, 所以参数必须用双引号包起来
+./_grep_middle_proc "$result_file_path_all" "$grep_target"
+
+
+
+
+

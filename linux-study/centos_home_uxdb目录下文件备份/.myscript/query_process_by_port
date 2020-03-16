@@ -1,0 +1,20 @@
+#!/bin/bash
+# 根据端口号查询对应的进程信息
+# 参考: https://blog.csdn.net/y805805/article/details/85857887
+
+if [ $# == 0 ]
+then
+    echo "Please input port num!"
+    exit
+fi
+
+port=$1
+
+# 必需要以sudo执行, 否则有些端口对应的进行显示不出来
+# -t(tcp) 仅显示tcp相关选项
+# -u(udp) 仅显示udp相关选项
+# -n 拒绝显示列名, 能显示数字的全部转化为数字
+# -l 仅显示出在listen(监听)的服务状态
+# -p 显示潜力相关链接的程序名
+sudo netstat -tunlp|grep -w $port
+

@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# 仅查询uxdb 中xactd.pid 相关的uxdb进程
+# 缩写 psx
+
+ps_uxdb|grep xactd.pid

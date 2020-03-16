@@ -1,0 +1,4 @@
+#!/bin/bash
+
+#locate "$1"|grep $UXSRCHOME |grep -n "$1"
+locate "$1"|grep $UXSRCHOME|grep -n $UXSRCHOME

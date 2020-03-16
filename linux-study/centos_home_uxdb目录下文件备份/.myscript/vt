@@ -1,0 +1,13 @@
+#!/bin/bash
+
+if [ $# -eq 0 ]; 
+then
+    grep_target=`cat $HOME/.myscript/grep_target.txt`
+else
+    grep_target=$1
+fi
+
+vim -t "$grep_target"
+
+# 将查询参数保存到grep_target.txt中
+echo "$grep_target" > $HOME/.myscript/grep_target.txt

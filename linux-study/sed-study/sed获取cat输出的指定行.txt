@@ -1,0 +1,9 @@
+sed -n "m,np" xx.txt
+
+sed -n "m,np" `cat xx.txt`
+
+m: 起始行
+n: 结束行
+
+注意: n后面必须要带一个字母p
+

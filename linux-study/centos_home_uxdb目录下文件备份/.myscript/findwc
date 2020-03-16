@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# 显示文件的全路径
+cd $UXSRCHOME
+
+result=`find . -name "$1.c"|grep -Ev $GREPFILTER|grep -E "/$1\."|grep -nE "$1"`
+#echo "$result"|grep -n "$1"
+
+# result为空时, wc -l的结果却为1, 不正确,需要特殊处理
+if [ -z "$result" ] 
+then
+    result_cnt=0
+else
+    result_cnt=`echo "$result"|wc -l`
+fi
+
+echo $MYPREFIX1 [`date +%H:%M:%S`] "find count is:" $result_cnt
+#echo "$result"|grep -n "$1"    # 文件路径和行号高亮没有了
+find . -name "$1.c"|grep -Ev $GREPFILTER|grep -E "/$1\."|grep -nE "$1"
+echo $MYPREFIX2 [`date +%H:%M:%S`] "find count is:" $result_cnt

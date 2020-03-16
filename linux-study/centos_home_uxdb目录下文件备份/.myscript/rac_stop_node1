@@ -1,0 +1,8 @@
+#!/bin/bash
+
+cd $RAC_CLUSTER_DIR
+
+ux_ctl -D $RAC_CLUSTER_NAME -o "-c uxdb_rac=on -c master_id=1 -c node_id=1 -p 5432" -l logfile stop
+#ux_ctl -D $RAC_CLUSTER_NAME -o "-c uxdb_rac=on -c master_id=1 -c node_id=2 -p 5433" -l logfile stop
+#ux_ctl -D $RAC_CLUSTER_NAME -o "-c uxdb_rac=on -c master_id=1 -c node_id=3 -p 5434" -l logfile stop
+

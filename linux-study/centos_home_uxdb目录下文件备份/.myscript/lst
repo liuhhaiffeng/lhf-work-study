@@ -1,0 +1,4 @@
+#!/bin/bash
+
+# 查看grep_target.txt中的内容
+cat $HOME/.myscript/grep_target.txt

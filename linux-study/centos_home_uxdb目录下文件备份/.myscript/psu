@@ -1,0 +1,7 @@
+#!/bin/bash
+
+# 查询所有uxdb进程
+
+ps -ef|grep -v grep|grep -v .myscript|grep -v .vscode|grep $HOME
+ps -ef|grep -v grep|grep -v .myscript|grep -v .vscode|grep uxdb:
+ps -ef|grep -v grep|grep -v .myscript|grep -v .vscode|grep uxdb|grep initdb

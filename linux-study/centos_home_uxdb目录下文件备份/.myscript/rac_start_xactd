@@ -1,0 +1,7 @@
+#!/bin/bash
+
+cd /home/uxdb/uxdb-ng-rac/scripts/deploy/xactd/xactd/bin
+
+./run_xactd.sh --address=192.168.0.59 --port=8100 --raft_peers='192.168.0.59:8100:0,192.168.0.59:8200:0,192.168.0.59:8300:0,' --loglevel=3 --server_num=1 --action start
+./run_xactd.sh --address=192.168.0.59 --port=8300 --raft_peers='192.168.0.59:8100:0,192.168.0.59:8200:0,192.168.0.59:8300:0,' --loglevel=3 --server_num=1 --action start
+./run_xactd.sh --address=192.168.0.59 --port=8200 --raft_peers='192.168.0.59:8100:0,192.168.0.59:8200:0,192.168.0.59:8300:0,' --loglevel=3 --server_num=1 --action start

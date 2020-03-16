@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# 显示文件全路径
+cd $UXSRCHOME
+result=`find . -name "*.h" |xargs grep -win "$1"|grep -Ev $GREPFILTER|grep -win "$1"`
+
+# 将查询的结果文件路径保存到file.txt中, 以便openf脚本使用
+result_file_path=`echo "$result"|awk -F ":" '{print $2}'|uniq`
+if [ -z "$result_file_path" ]
+then
+    uniq_file_path_cnt=0
+else
+    uniq_file_path_cnt=`echo "$result_file_path"|wc -l`
+fi
+
+# result为空时, wc -l的结果却为1, 不正确,需要特殊处理
+if [ -z "$result" ] 
+then
+    result_cnt=0
+else
+    result_cnt=`echo "$result"|wc -l`
+fi
+
+echo $MYPREFIX1 [`date +%H:%M:%S`] "find count is" $result_cnt "from" $uniq_file_path_cnt "files"
+find . -name "*.h" |xargs grep -win "$1"|grep -Ev $GREPFILTER|grep -win "$1"
+echo $MYPREFIX2 [`date +%H:%M:%S`] "find count is" $result_cnt "from" $uniq_file_path_cnt "files"
+
+cd ~/.myscript
+# 注意因为参数的内容中间可能有空格和回车, 所以参数必须用双引号包起来
+./_grep_middle_proc "$result_file_path" "$1"
+

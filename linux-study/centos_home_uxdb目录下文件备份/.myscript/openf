@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# 显示文件的全路径
+cd $UXSRCHOME
+
+# 默认打开文件之前回显结果
+# -n 显示行号
+#cat -n $HOME/.myscript/file.txt
+
+if [[ $# == 1 ]] && [[ $1 == "-v" ]]
+    then
+    exit  # 其实这里什么也不做, 直接退出 注意: shell 要求不能有空语句, 所以这里添加exit即可
+fi
+
+totallinenum=`cat $HOME/.myscript/file.txt|wc -l`
+grep_target=`cat $HOME/.myscript/grep_target.txt`
+ 
+# 无参情况下, 如果文件行数大于2个, 就没有必要以-O的方式打开了, 而是默认的打开方式
+if [[ $1 == "" ]] && [[ $totallinenum -gt 2 ]]
+    then
+        vim +/"$grep_target" `cat $HOME/.myscript/file.txt`
+# 无参情况下, 如果文件行数小于等于6个, 则以-O的方式打开
+elif [[ $1 == "" ]] && [[ $totallinenum -le 2 ]]
+    then
+        vim +/"$grep_target" -O `cat $HOME/.myscript/file.txt` 
+# -O
+elif [ $1 == "-O" ]
+    then
+    vim +/"$grep_target" -O `cat $HOME/.myscript/file.txt`
+# -o 以水平分割的方式打开
+elif [ $1 == "-o" ]
+    then
+    vim +/"$grep_target" -o `cat $HOME/.myscript/file.txt`
+fi
+
+# $1为整形数字, 表示要打开指定的某一个文件
+if [ $# == 1 ]
+    then
+    linenum=$1
+    specifyfile=`cat $HOME/.myscript/file.txt|awk 'NR==linenum{print $1}' linenum=$linenum`
+    echo "specifyfile is:" $specifyfile
+    vim +/"$grep_target" $specifyfile
+fi

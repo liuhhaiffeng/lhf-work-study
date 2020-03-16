@@ -1,0 +1,1 @@
+valgrind --leak-check=full --trace-children=yes --tool=memcheck --log-file=a.log uxsql -c "select count(*) from t1;"

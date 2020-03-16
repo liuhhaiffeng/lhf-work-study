@@ -1,0 +1,32 @@
+1. 如何给awk传外部参数 https://blog.csdn.net/bitcarmanlee/article/details/51324585
+
+2.  shell中或的写法  必须要这么写才对: 
+if [[ $1 == "-O" ]] || [[ $1 == "" ]]
+if [[ $1 == "-O" ]] && [[ $1 == "" ]]
+
+3. 字符串相等比较 可以使用 == 也可以使用 -eq
+
+4. shell脚本报错："[: =: unary operator expected"
+https://blog.csdn.net/goodlixueyong/article/details/6564591
+
+5. 查询当前目录下包括所有子目录下所有*.log文件中指定内容(如: master )
+下面有2中方法: 个人认为"grep -r --include="*.log" 和 "find -name "*.log" 是等价的
+grep -r --include="*.log" xxx
+find -name "*.log"|xargs grep xxx
+
+区别: 
+1. find 可以指定目录, 而grep -r目前只能在当前目录下执行 ,  find -name  默认是在当前目录下执行的
+2. 从使用上来说, 感觉grep -r 更加自然一些
+3. grep -r 好像不能查询符号文件, 而find -L . 则可以
+
+grep -r --include="*.log" xxx ./
+find . -name "*.log"|xargs grep xxx
+
+grep -r --include="*.log" xxx /home/uxdb/xxx
+find /home/uxdb/xxx -name "*.log"|xargs grep xxx
+
+详细参考: https://blog.csdn.net/zengxianglei/article/details/90637557
+
+6. vi `ls|sed '5,5p'    # vi 打开输出结果中的第5行对应的文件路径
+
+

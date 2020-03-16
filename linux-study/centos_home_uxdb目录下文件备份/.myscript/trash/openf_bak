@@ -1,0 +1,58 @@
+#!/bin/bash
+
+# 显示文件的全路径
+cd $UXSRCHOME
+
+# 默认打开文件之前回显结果
+# -n 显示行号
+cat -n $HOME/.myscript/file.txt
+
+## -v: 不打开文件, 仅查看回显结果
+#if [ $1 == "-v" ]
+#    then
+#    exit  # 其实这里什么也不做, 直接退出 注意: shell 要求不能有空语句, 所以这里添加exit即可
+#
+## -O 或者不带参数(即: 参数为空) 则以垂直分割的方式打开
+#elif [[ $1 == "-O" ]] || [[ $1 == "" ]]
+#    then
+#    vim -O `cat $HOME/.myscript/file.txt`
+## -o 以水平分割的方式打开
+#elif [ $1 == "-o" ]
+#    then
+#    vim -o `cat $HOME/.myscript/file.txt`
+#fi
+
+
+
+filetxt=`cat $HOME/.myscript/file.txt`
+linenum=$2
+
+echo "222 " $2
+echo "linenum " $linenum
+
+#if [ $2 -ne "" ]
+if [ $# == 2 ]
+    then
+   filetxt=`cat $HOME/.myscript/file.txt|awk 'NR==linenum{print $1}' linenum=$linenum`
+fi
+
+echo "filetxt " $filetxt
+
+# 不带参数(即: 参数为空): 不打开文件, 仅查看回显结果
+if [ $1 == "" ]
+    then
+    exit  # 其实这里什么也不做, 直接退出 注意: shell 要求不能有空语句, 所以这里添加exit即可
+
+# -O 则以垂直分割的方式打开
+elif [[ $1 == "-O" ]] || [[ $1 == "" ]]
+    then
+    vim -O `cat $HOME/.myscript/file.txt`
+# -o 以水平分割的方式打开
+elif [ $1 == "-o" ]
+    then
+    vim -o `cat $HOME/.myscript/file.txt`
+# -d 以默认(defual)方式打开
+elif [ $1 == "-d" ]
+    then
+    vim `cat $HOME/.myscript/file.txt`
+fi

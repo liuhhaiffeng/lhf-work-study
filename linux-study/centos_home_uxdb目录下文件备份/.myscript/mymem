@@ -1,0 +1,4 @@
+#!/bin/bash
+
+free -h|grep -v Swap
+cat /proc/meminfo|grep Mem

@@ -1,0 +1,32 @@
+#!/bin/bash
+# myfind 
+# 1. 支持*的模式搜索
+# 2. 2>/dev/null 可以过滤警告错误信息
+# 3. 输出结果有行号, 并且搜索目标会标色, 方便识别
+
+#echo "1="$1
+#echo "2="$2
+
+target=$1
+filter=$2
+
+if [ $# == 1 ];
+then
+    # find 通配符*在grep中需要替换为.*才合法, 所以将$1中所有的*替换为.*
+    a=$target
+    b=${a//\*/\.\*}
+    # 默认全局搜索
+    result=`find / -name $target -ls 2>/dev/null | grep "$b"` 
+    echo "$result"|grep -n "$b"
+else
+    # 将$1中所有的*替换为.*
+    a=$target
+    b=${a//\*/\.\*}
+    result=`find / -name $target -ls 2>/dev/null | grep "$filter" | grep "$b"`
+    echo "$result"|grep -n "$b"
+fi
+
+    result_file_path_all=`echo "$result"|awk '{printf $11"\n"}'`
+
+cd ~/.myscript
+./_grep_middle_proc "$result_file_path_all" ""

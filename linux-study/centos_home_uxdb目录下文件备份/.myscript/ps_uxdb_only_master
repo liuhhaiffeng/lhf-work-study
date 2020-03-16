@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# 仅查询uxdb中的ux master进程
+# 缩写psm
+
+ps_uxdb|grep $UXHOME

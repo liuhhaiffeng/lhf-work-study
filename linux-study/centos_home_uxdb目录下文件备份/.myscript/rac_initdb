@@ -1,0 +1,3 @@
+#!/bin/bash
+
+initdb -D $RAC_CLUSTER_DIR/$RAC_CLUSTER_NAME -R '127.0.0.1:8100:0,127.0.0.1:8200:0,127.0.0.1:8300:0,' -Atrust

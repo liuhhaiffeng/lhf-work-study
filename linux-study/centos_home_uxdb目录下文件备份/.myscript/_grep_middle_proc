@@ -1,0 +1,16 @@
+#!/bin/bash
+# 此脚步为内部脚步, 仅被其他脚步调用(如: grepc)
+
+# grepxx 的查询结果路径
+result_file_path=$1
+# grepxx 的查询参数
+grep_target=$2
+
+#echo "result_file_path is " $result_file_path
+#echo "grep_target is " $grep_target
+
+# 将查询的结果文件路径保存到file.txt中, 以便openf脚本使用
+echo "$result_file_path" > $HOME/.myscript/file.txt
+# 将查询参数保存到grep_target.txt中, 以便openf脚本使用
+echo "$grep_target" > $HOME/.myscript/grep_target.txt
+

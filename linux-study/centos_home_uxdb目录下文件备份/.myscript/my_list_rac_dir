@@ -1,0 +1,5 @@
+#!/bin/bash
+
+cd $UXSRCHOME
+
+ls -lhR `find . -name *rac -type d`|grep -vE "Makefile|\.o|\.txt"|less
