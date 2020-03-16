@@ -81,5 +81,11 @@ vscode下将鼠标放到函数或变量时可以预览其定义, 但只显示一
 
 ## 实用插件
 
+Bookmarks
+Bracket Pair Colorizer
+Markdown Preview Enhanced
+Markdown TOC
+Remote - SSH
+Remote - WSL
 
 
