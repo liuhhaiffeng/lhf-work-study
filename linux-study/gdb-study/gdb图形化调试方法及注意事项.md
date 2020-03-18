@@ -9,3 +9,5 @@ sudo gdb --tui -p 6680
 ## 参考
 
 [GDB tui使用方法](https://blog.csdn.net/weixin_34150503/article/details/91681008)
+
+[gdb TUI界面快捷键](https://blog.csdn.net/xiaozi0221/article/details/90512751)
