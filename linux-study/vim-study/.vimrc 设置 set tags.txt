@@ -1,0 +1,5 @@
+希望在任何目录下 vi -t  xxxxfunc  都可以使用, 就需要将tags所在的路径添加到 tags中
+
+./vimrc 中设置如下
+
+set tags+= /home/uxdb/xx/xx/tags

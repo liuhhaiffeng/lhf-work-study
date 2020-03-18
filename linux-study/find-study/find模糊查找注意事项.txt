@@ -1,0 +1,5 @@
+find 模糊查找使用的是 *  通配符, 模糊查找时注意, 必须要用双引号将 pattern 包括起来, 否则语法错误, 查找不到.
+
+find ./ -name core*       # 错误
+
+find ./ -name "core*"     # 正确

@@ -1,0 +1,2 @@
+find ./ -name uxdb -type d             # -type d  目录
+find ./ -name uxdb - type f            # -type f  文件
