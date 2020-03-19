@@ -345,3 +345,19 @@ lhf_ps: 上面3个步骤都要执行才会生效.
 ## git rebase
 
 [聊下 git rebase -i](https://www.cnblogs.com/wangiqngpei557/p/5989292.html)
+
+
+## 撤销 git add
+
+git reset HEAD
+
+## git push
+
+[uxdb@192 ~/uxdb-ng-rac/uxdb-2.0/src/backend/uxmaster]$ git push
+fatal: The current branch bug/ver2.1.0.1r/#67004_#67020_#70991 has no upstream branch.
+To push the current branch and set the remote as upstream, use
+
+    git push --set-upstream origin bug/ver2.1.0.1r/#67004_#67020_#70991
+
+[uxdb@192 ~/uxdb-ng-rac/uxdb-2.0/src/backend/uxmaster]$ 
+
