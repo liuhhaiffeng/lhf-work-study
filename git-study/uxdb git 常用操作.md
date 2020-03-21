@@ -353,6 +353,13 @@ git reset HEAD
 
 ## git push
 
+格式
+
+git push --set-upstream origin 远程分支名称
+
+示例
+
+```
 [uxdb@192 ~/uxdb-ng-rac/uxdb-2.0/src/backend/uxmaster]$ git push
 fatal: The current branch bug/ver2.1.0.1r/#67004_#67020_#70991 has no upstream branch.
 To push the current branch and set the remote as upstream, use
@@ -360,4 +367,26 @@ To push the current branch and set the remote as upstream, use
     git push --set-upstream origin bug/ver2.1.0.1r/#67004_#67020_#70991
 
 [uxdb@192 ~/uxdb-ng-rac/uxdb-2.0/src/backend/uxmaster]$ 
+```
 
+### --set-upstream (暴力推送)
+
+
+分析：
+git分支与远程主机存在对应分支，可能是单个可能是多个。 
+
+simple方式：如果当前分支只有一个追踪分支，那么git push origin到主机时，可以省略主机名。 
+
+matching方式：如果当前分支与多个主机存在追踪关系，那么git push --set-upstream origin master（省略形式为：git push -u origin master）将本地的master分支推送到origin主机（--set-upstream选项会指定一个默认主机），同时指定该主机为默认主机，后面使用可以不加任何参数使用git push。
+
+注意：
+Git 2.0版本之前，默认采用matching方法，现在改为默认采用simple方式。
+
+lhf_ps: 即如果本地推送的分支在远端还没有创建, 使用git push --set-upstream origin master（省略形式为：git push -u origin master）, 可以在推送的同时在远端创建此分支.
+
+#### 参考: 
+[git push时提示--set-upstream](https://www.cnblogs.com/blog-yuesheng521/p/10670778.html)
+
+## 查看远程分支的仓库地址
+
+git remote -v

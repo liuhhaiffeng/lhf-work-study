@@ -1,2 +1,8 @@
 find ./ -name uxdb -type d             # -type d  目录
 find ./ -name uxdb - type f            # -type f  文件
+
+多个文件类型查找
+
+find ./ -name "*.[ch]                  # 查找文件扩展名为*.c和*.h, 如果扩展名如: *.html, *.asm之类这个方法就不好用了
+
+find ./ -name "*.c" -o -name "*.html" -o -name "*.asm"     # 注意: 第一个-name不加 -o, 后面的 -name前面都要加-o

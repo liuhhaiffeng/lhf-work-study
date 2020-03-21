@@ -82,10 +82,33 @@ vscode下将鼠标放到函数或变量时可以预览其定义, 但只显示一
 ## 实用插件
 
 Bookmarks
+  Mark lines and jump to them
+
 Bracket Pair Colorizer
+Bracket Select
+  alt + a 选中当前{}中的内容
+
 Markdown Preview Enhanced
+  比vscode默认的markdown preview显示更好
 Markdown TOC
+  使得markdown有目录
+markdownlint
+  markdown语法检查和提示
+Markdown All in One
+  评分很高, 目前还不知道有什么用处.
+
 Remote - SSH
+Remote - SSH: Editing Configure Files
 Remote - WSL
 
+References++
+  Show the results of "Find References' as formmatted text in an textor.
 
+PrintCode
+  Added printing function to VS Code!
+
+hexdump for VSCode
+  vscode下的十六进制显示, 有了它, 就不需要UtralEdit之类的编辑器了.
+
+C/C++
+  C/C++ IntelliSense, debugging, and code browsing.
