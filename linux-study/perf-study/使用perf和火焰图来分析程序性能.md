@@ -1,6 +1,5 @@
 # 使用perf和火焰图来分析程序性能
 
-
 2、使用火焰图展示结果
 
 1、Flame Graph项目位于GitHub上：https://github.com/brendangregg/FlameGraph
