@@ -102,3 +102,9 @@ until line
 ## gdb 窗口编辑调试文件
 
 gdb中, 输入 edit 即可.
+
+## gdb 调试的时候被信号终止
+
+输入命令info signals或 info handle 查看信号
+用以下命令设置即可，收到SIGUSR1不会终止
+handle SIGUSR1 nostop
