@@ -1,0 +1,5 @@
+sudo yum update code
+
+
+Centos YUM更新软件
+https://jingyan.baidu.com/article/19020a0ac84c3d529d2842ee.html
