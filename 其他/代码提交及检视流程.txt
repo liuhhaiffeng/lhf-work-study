@@ -1,0 +1,30 @@
+
+# 代码提交及检视流程
+
+## GitLab
+
+作为检视人,  GitLab上, 填写"已检视"即可. 
+无需"merge".
+
+
+## Redmine
+
+GitLab检视完成后, 在到对应的Redmine问题单下,
+填写"已检视", 然后问题单的状态修改为"已解决",
+并将tickt走给代码合并人, 如: 赵健.
+
+赵健在看到转给他的tickt后, 就会对此ticket是否"需要关闭"以及GitLab上的"merge"
+进行处理.
+
+
+
+## 发起merge request注意事项
+
+Assin 处: 填写需要代码检视的人
+
+Milestone: 这里可以默认不填.
+
+Lable: 填写 RAC, 以方面merge人看到.
+
+
+
