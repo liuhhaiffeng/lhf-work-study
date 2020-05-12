@@ -26,3 +26,8 @@ find . -name "*.h" -o -name "*.asm" -o -name "*.c"  | ctags -f .tags --c-kinds=
 ————————————————
 版权声明：本文为CSDN博主「warcraftzhaochen」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
 原文链接：https://blog.csdn.net/warcraftzhaochen/article/details/73188682
+
+## 一次性退出所有 vimdiff
+
+git, 使用vimdiff比较文件时, 有可能会打开很多文件,  2个比较文件的退出是  :qa
+而整个vimdiff的退出为  :qall

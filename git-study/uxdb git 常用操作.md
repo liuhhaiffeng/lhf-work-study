@@ -15,11 +15,22 @@ git branch
 删除本地分支
 git branch -d 本地分支名称
 
+强制删除本地分支
+
+```
+[uxdb@localhost ~/uxdb-ng-rac/uxdb-2.0]$ git branch -d bug/ver2.1.0.2r/#74240
+error: The branch 'bug/ver2.1.0.2r/#74240' is not fully merged.
+If you are sure you want to delete it, run 'git branch -D bug/ver2.1.0.2r/#74240'.
+```
+
 查看远程分支
 git branch -a
 
 删除远程分支
 git push origin --delete 远程分支名称
+
+本地分支重命名 
+git branch -m old new
 
 ## 参考
 
@@ -57,7 +68,9 @@ Already up to date.
 ```
 
 git rebase
-TODO
+
+git rebase -i HEAD HEAD^
+git rebase -i HEAD HEAD^^^
 
 ### 推送本地分支local_branch到远程分支 remote_branch并建立关联关系
 
@@ -155,6 +168,13 @@ git diff commitid1 commiid2
 git diff 669c4a2eea468e91876d7787fc2f44aa829d93d3 028feee4801cd8c8679414288b68c338e648088c
 
 注: 当然, commiid可以不用写这么全, 前6位或前8位即可.
+
+## git diff 指定版本和当前修改文件之间的对比
+
+git diff  HEAD^ coroparse.c coroparse.c
+
+备注: 指定版本和当前修改文件之间的对比, 这里只写一个指定版本(如 HEAD^), 当前修改文件默认没有版本(即 不写), 即可实现比对.
+
 
 ## 2个分支代码合并(merge)
 
@@ -345,6 +365,141 @@ lhf_ps: 上面3个步骤都要执行才会生效.
 ## git rebase
 
 [聊下 git rebase -i](https://www.cnblogs.com/wangiqngpei557/p/5989292.html)
+
+具体步骤如下:
+1. git rebase -i  起始commitid   结束commitid
+
+   比如提交id依次为commit1, commit2, commit3, commit4
+   注意: 你想合并3和4,  那么这里的"起始commitid" 要为 "commit2", 而非"commit3"
+
+2. 如下所示, rebase时, 如果存在未提交的其他内容, 会提示你先 unstaged changes,
+   这里我想合并"HEAD^ 和 HEAD"的提交, 那么, 起始commitid就应该为"HEAD^^"
+```
+[uxdb@localhost ~/uxdb-ng-rac/uxdb-2.0]$ git rebase -i HEAD^ HEAD
+Cannot rebase: You have unstaged changes.
+Please commit or stash them.
+[uxdb@localhost ~/uxdb-ng-rac/uxdb-2.0]$ git stash
+Saved working directory and index state WIP on bug/ver2.1.0.2r/#74240: b32b0af8c3 perfect code login
+[uxdb@localhost ~/uxdb-ng-rac/uxdb-2.0]$ git rebase -i HEAD^ HEAD
+Successfully rebased and updated detached HEAD.
+[uxdb@localhost ~/uxdb-ng-rac/uxdb-2.0]$ git rebase -i HEAD^^ HEAD
+Successfully rebased and updated detached HEAD.
+```
+
+3. 看到了没, "git rebase -i HEAD^^ HEAD", 才会显示"HEAD^"和"HEAD"的提交内容
+   
+```
+pick 45c2fe2844 fix bug #74240  Wrong user configuration, caused the database instance start failed
+pick b32b0af8c3 perfect code login
+
+# Rebase dbcdf82275..b32b0af8c3 onto dbcdf82275 (2 commands)
+#
+# Commands:
+# p, pick = use commit
+# r, reword = use commit, but edit the commit message
+# e, edit = use commit, but stop for amending
+# s, squash = use commit, but meld into previous commit
+# f, fixup = like "squash", but discard this commit's log message
+# x, exec = run command (the rest of the line) using shell
+# d, drop = remove commit
+#
+# These lines can be re-ordered; they are executed from top to bottom.
+#
+# If you remove a line here THAT COMMIT WILL BE LOST.
+#
+# However, if you remove everything, the rebase will be aborted.
+#
+# Note that empty commits are commented out
+```
+
+4. 这里我想将下面2条提交合并为一条, 即将"pick b32b0af8c3"的提交合并到"pick 45c2fe2844"上
+
+```
+pick 45c2fe2844 fix bug #74240  Wrong user configuration, caused the database instance start failed
+pick b32b0af8c3 perfect code login
+```
+
+5. 这里将 pick b32b0af8c3 perfect code login  前面的pick 修改为 s, 即: squash
+
+```
+pick 45c2fe2844 fix bug #74240  Wrong user configuration, caused the database instance start failed
+pick b32b0af8c3 perfect code login
+```
+
+6. 然后 :wq, 退出vim
+
+这时候就会看到git进行rebase了.
+
+7. rebase完成后, 会再次自动打开vim, 如下
+
+```
+# This is a combination of 2 commits.
+# This is the 1st commit message:
+
+fix bug #74240  Wrong user configuration, caused the database instance start failed
+
+# This is the commit message #2:
+
+perfect code login
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# Date:      Thu Apr 23 14:50:22 2020 +0800
+#
+# interactive rebase in progress; onto dbcdf82275
+# Last commands done (2 commands done):
+#    pick 45c2fe2844 fix bug #74240  Wrong user configuration, caused the database instance start failed
+#    squash b32b0af8c3 perfect code login
+# No commands remaining.
+# You are currently rebasing.
+#
+# Changes to be committed:
+#       modified:   uxdb-2.0/corosync-3.0.3/exec/coroparse.c
+
+```
+
+上面步骤6是rebase了提交, 这里是询问你如果rebase 提交日志, 在这里你有机会对rebase的所有提交日志进行再编辑和修改.
+这里我选择删除 "perfect code login"记录, 仅保留 "fix bug xx"的记录, 修改后如下:
+
+```
+# This is a combination of 2 commits.
+# This is the 1st commit message:
+
+fix bug #74240  Wrong user configuration, caused the database instance start failed
+
+# This is the commit message #2:
+
+
+# Please enter the commit message for your changes. Lines starting
+# with '#' will be ignored, and an empty message aborts the commit.
+#
+# Date:      Thu Apr 23 14:50:22 2020 +0800
+#
+# interactive rebase in progress; onto dbcdf82275
+# Last commands done (2 commands done):
+#    pick 45c2fe2844 fix bug #74240  Wrong user configuration, caused the database instance start failed
+#    squash b32b0af8c3 perfect code login
+# No commands remaining.
+# You are currently rebasing.
+#
+# Changes to be committed:
+#       modified:   uxdb-2.0/corosync-3.0.3/exec/coroparse.c
+
+```
+
+8. 然后执行 :wq, 退出vim, 至此, rebase就全部完成了
+
+```
+[uxdb@localhost ~/uxdb-ng-rac/uxdb-2.0]$ git rebase -i HEAD^^ HEAD
+[detached HEAD 9f95c715ec] fix bug #74240  Wrong user configuration, caused the database instance start failed
+ Date: Thu Apr 23 14:50:22 2020 +0800
+ 1 file changed, 17 insertions(+), 1 deletion(-)
+Successfully rebased and updated detached HEAD.
+[uxdb@localhost ~/uxdb-ng-rac/uxdb-2.0]$ 
+```
+
+9. 查看git log, 发现已经rebase成功了
 
 
 ## 撤销 git add

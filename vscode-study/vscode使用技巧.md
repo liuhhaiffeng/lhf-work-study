@@ -112,3 +112,24 @@ hexdump for VSCode
 
 C/C++
   C/C++ IntelliSense, debugging, and code browsing.
+
+## VSCode 删除当前行快捷键
+
+ctrl+shift+k
+
+## vscode 左右缩进
+
+ctrl+]
+ctrl+[
+
+## vscode 自动化格式代码
+
+首先选中要格式化的内容
+
+windows:  shift + alt + f
+linux: ctrl + shift + i
+
+## vscode垂直选中列选中
+
+VSCode列选择快捷键：Alt+Shift+鼠标左键
+
