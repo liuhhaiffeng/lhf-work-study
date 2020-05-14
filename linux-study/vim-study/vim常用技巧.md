@@ -1,3 +1,19 @@
+## 查看 vimtutor
+
+vimtutor是个命令, 可以直接运行
+
+## vim下打开文件
+
+:e  可以打开指定文件
+
+ctrl-D 可以列出当前目录下的所有文件和目录
+
+## vim下如何使用help
+
+在vim下输入命令, :h  或  :help
+
+:h  /           查找关于搜索 /  的内容
+:h  :e          查找关于 :e 的内容
 
 ## 选择区域查找
 
@@ -31,3 +47,12 @@ find . -name "*.h" -o -name "*.asm" -o -name "*.c"  | ctags -f .tags --c-kinds=
 
 git, 使用vimdiff比较文件时, 有可能会打开很多文件,  2个比较文件的退出是  :qa
 而整个vimdiff的退出为  :qall
+
+## vim 高亮插件 taghighlight
+
+安装后, 如果高亮不生效, 可以在vim中执行如下的命令
+:UpdateTypesFile
+
+## vim 中cd跳转到当前打开的文件所在的目录
+
+:cd %:h
