@@ -56,3 +56,28 @@ Xshell 支持同时操作多个会话窗口，进而同时操作多个主机。
 注: 此功能我用在PG数据查询测试, 比如: 想同时在多个会话选项卡窗口中同时执行查询命令或其他sh脚本等.
 
 参考: [10 Xshell 使用技巧（二）](https://www.jianshu.com/p/16e6592602f5)
+
+## xshell split 多窗口相关
+
+Ctrl+Tab 在split的多个窗口中跳转
+Shift+Ctrl+T  隐藏所有窗口的标签, 可以使得可以面积更大一些
+
+## 快速复制相同窗口
+
+Shift+Alt+T 快速复制当前的窗口
+
+## 当前窗口全屏/撤销全屏
+
+按一下 Alt+Enter 全屏, 再按一下 Alt+Enter 撤销全屏.
+
+## 打开"会话"窗口
+
+Alt+O
+
+## 关闭当前ssh
+
+Alt+C
+
+## 恢复当前ssh
+
+Shift+Alt+R
