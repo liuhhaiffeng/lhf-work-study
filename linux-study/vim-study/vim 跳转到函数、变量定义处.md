@@ -1,5 +1,42 @@
 vim 跳转到函数、变量定义处：
 
+## 简单的
+
+全局变量跳转 ctrl + ]
+局部变量跳转 gd
+
+跳回 ctrl + o, 想要再次查看, ctrl + i
+
+注意 ctrl + t 和 ctlr + i 的区别:
+ctrl + t 不断的退栈, 
+ctrl + i 和 ctrl + o 即回到 上次／下次 光标位置。
+
+ctrl + t 标签退栈
+ctrl + o 跳转到前一个位置
+ctrl + i 跳转到后一个位置
+
+vim 帮助用法:
+
+:h CTRL-T
+:h CTRL-O
+:h CTRL-I
+
+刘海峰备注:
+实际中前后跳转用 ctrl+o 和 ctri+i 就好了
+
+ctrl+t 好像和 :tags  有关, 暂时还不理解如何使用.
+
+ctrl+t 好像和 ctrl + ] 有关, ctrl + ] 的跳转是"入栈", ctrl + t 是出栈
+:tags  查看堆栈
+:tag pop一下
+
+
+
+
+
+
+## 详细的
+
 tycoon1988 2014-08-29 20:43:00  11822  收藏 4
 展开
 1.基本配置
