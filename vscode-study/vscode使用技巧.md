@@ -1,3 +1,4 @@
+# VSCode操作技巧
 
 ## 自定义主题风格
 
@@ -69,15 +70,57 @@ b. foreground: 函数参数橘黄色(#FD971F)高亮显示
 
 ## 操作技巧
 
-### 按下ctrl时, 鼠标悬浮查看更多预览
+### 全局搜索函数
 
-vscode下将鼠标放到函数或变量时可以预览其定义, 但只显示一行, 如果按下ctrl, 可以查看更多行的预览.
+按下  CTRL+T
 
-### 配对括号跳转 Ctrl+Shift+\
+在弹出的窗口中直接输入要查找的函数名称, 不区分大小写
 
-### 手动缩进 ctrl+] ctrl+[
+### 全局搜索文件
 
-### 自动缩进 shift+alt+F
+CTRL+P
+
+在弹出的窗口中直接输入要查找的文件名称, 不区分大小写
+
+### 代码浏览 前进/后退
+
+Windows下:
+
+ALT+方向左键
+ALt+方向右键
+
+Linux下:
+
+CTRL+ALT+-
+CTRL+SHIFT+-
+
+### 按下CTRL时, 鼠标悬浮查看更多预览
+
+vscode下将鼠标放到函数或变量时可以预览其定义, 但只显示一行, 如果按下CTRL, 可以查看更多行的预览.
+
+### 配对括号跳转 CTRL+SHIFT+\
+
+### 自动缩进代码 SHIFT+ALT+F
+
+### VSCode 删除当前行快捷键
+
+CTRL+SHIFT+K
+
+### vscode 左右缩进代码
+
+CTRL+]    向左缩进一个Tab
+CTRL+[    向右缩进一个Tab
+
+### vscode 自动化格式代码
+
+首先选中要格式化的内容
+
+windows:  SHIFT + ALT + F
+linux: CTRL + SHIFT + I
+
+### vscode垂直选中列选中
+
+VSCode列选择快捷键：ALT+SHIFT+鼠标左键
 
 ## 实用插件
 
@@ -86,7 +129,7 @@ Bookmarks
 
 Bracket Pair Colorizer
 Bracket Select
-  alt + a 选中当前{}中的内容
+  ALT + a 选中当前{}中的内容
 
 Markdown Preview Enhanced
   比vscode默认的markdown preview显示更好
@@ -113,23 +156,5 @@ hexdump for VSCode
 C/C++
   C/C++ IntelliSense, debugging, and code browsing.
 
-## VSCode 删除当前行快捷键
 
-ctrl+shift+k
-
-## vscode 左右缩进
-
-ctrl+]
-ctrl+[
-
-## vscode 自动化格式代码
-
-首先选中要格式化的内容
-
-windows:  shift + alt + f
-linux: ctrl + shift + i
-
-## vscode垂直选中列选中
-
-VSCode列选择快捷键：Alt+Shift+鼠标左键
 
