@@ -100,9 +100,7 @@ vscode下将鼠标放到函数或变量时可以预览其定义, 但只显示一
 
 ### 配对括号跳转 CTRL+SHIFT+\
 
-### 自动缩进代码 SHIFT+ALT+F
-
-### VSCode 删除当前行快捷键
+### VSCode 删除当前行
 
 CTRL+SHIFT+K
 
