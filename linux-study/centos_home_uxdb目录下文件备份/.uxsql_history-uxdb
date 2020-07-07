@@ -1,0 +1,219 @@
+select 1;
+\q
+\echo HISTSIZE
+\echo :HISTSIZE 
+\echo :HOST
+\echo :IGNOREEOF
+\echo :LASTOID
+\echo :LASTOID
+\echo :PORT
+\! vi ~/.uxsqlrc
+select * from :mt;
+\q
+select * from :mt;
+\echo :mt
+show :mtshow mt;
+select * from :"mt";
+select * from :'mt';
+select * from :'mt';
+select * from ':mt';
+uxsql -c 'select 1';
+uxsql -c "select 1";
+uxsql -c "select 1;";
+\q
+select 1;
+\crosstabview
+select 1 as name, 2 as age ;
+\crosstabview name, age;
+\crosstabview name, age, age;
+\crosstabview name, age, age as age2;
+select 1 as name, 2 as age, 3 as weight;
+\crosstabview name  age weight
+select * from my_table;
+\corsstabview first, second;
+\corsstabview first second;
+\crosstabview first second;
+\crosstabview first second second;
+\crosstabview first second first as gt2;
+select first, second, first as gt from my_table;
+\crosstabview first second gt;
+select first, second, first as gt, first as gt2 from my_table;
+\crosstabview first second gt;
+\crosstabview first second gt gt2
+\d
+\l
+\l+
+\d+
+\d
+\dS
+\dS+
+\lS
+\lS+
+\dA
+\dA+
+-E
+\dA+
+\q
+\d
+\l
+\l+
+\dtvsE
+\q
+\dtvsE
+\dC
+\dD
+\dD+
+\dS
+\dd
+\dv
+\dt
+\d
+\d
+\dt
+\dv
+\dv
+create view my_vtable as select * from my_table;
+\dv
+\dv+
+\des
+\q
+\d
+\q
+\q
+\q
+\q
+\d
+copy -f 1.sql;
+\copy -f 1.sql
+\copy t from 1.sql
+\q
+\copy t from 1.sql
+\d t
+\! vi 1.sql
+insert into t values(1, 'a');
+\copy t from 1.sql
+\q
+\copy t from 1.sql
+\! vi 1.sql
+copy t from 1.sql;
+copy t from '/home/uxdb/1.sql';
+\q
+\q
+copy t from '/home/uxdb/1.csv' with csv;
+copy t(id, name) from '/home/uxdb/1.csv' with csv;
+\q
+copy t from '~/1.csv' delimiter ',';
+copy t from '/home/uxdb/1.csv' delimiter ',';
+select * from t;
+\1 vi 1.csv
+\! vi 1.csv
+copy t to 2.csv;
+copy t to '/home/uxdb/2.csv'
+\! vi 2.csv
+select * from t;
+delete t;
+delete from t;
+copy t from 'home/uxdb/1.csv';
+\! 1.csv
+\q
+copy t from '/home/uxdb/1.csv';
+copy t from '/home/uxdb/1.csv' with delitimer ', ';
+copy t from '/home/uxdb/1.csv' with csv;
+\q
+copy t from '/home/uxdb/1.sql' with sql;
+\q
+delete from t;
+copy t from '/home/uxdb/1.csv' with csv;
+select * from t;
+\! vi 1.csv
+\1
+\q
+copy t from '/home/uxdb/1.csv' with csv;
+copy t from '/home/uxdb/1.csv' with txt;
+\q
+copy t from '/home/uxdb/1.txt' with txt;
+copy t from '/home/uxdb/1.txt' with csv;
+copy t to '/home/uxdb/11.csv' with csv;
+\q
+copy t to '/home/uxdb/11.csv';
+copy t to '/home/uxdb/11.csv' with txt;
+copy t to '~/11.csv' with csv;
+uxsql;
+select * from t;
+\dt t
+\! pwd
+\q
+select * from t;
+delete from t;
+copy t from "1, Jack";
+copy t from stdin;
+copy (select * from ux_class) to 111.csv;
+copy (select * from ux_class) to 111.csv;
+slect * from ux_class;
+slect * from ux_classes;
+select * from ux_class;
+select * from ux_class;
+copy (select * from ux_class) to '/home/uxdb/111.csv';
+\! vi 111.csv
+\q
+\! vi 1.csv
+\q
+\! vi 111.csv
+\q
+copy (select * from ux_class) to my.csv;
+copy (select * from ux_class) to '/home/uxdb/my.csv';
+\! vi my.csv
+\q
+create table myc as select * from ux_class where 1=2;
+\d myc
+select * from myc;
+copy myc from "/home/uxdb/myc.csv";
+copy myc from '/home/uxdb/myc.csv';
+\! ls
+copy myc from '/home/uxdb/my.csv';
+select cout(*) from myc;
+select count(*) from myc;
+\d myc
+copy (select relname, relnamespace, reltype from myc) to stdout;
+copy (select relname, relnamespace, reltype from myc) to '/home/uxdb/my2.csv;';
+\! ls
+\! mv my2.csv;? my2.csv
+\! mv "my2.csv
+\q
+copy (select relname, relnamespace, reltype from myc) to '/home/uxdb/1.csv';
+create table myc2 as select relname, relnamespace, reltype from myc;
+copy myc2 from '1.csv';
+copy myc2 from '~/1.csv';
+copy myc2 from '/home/uxdb/1.csv';
+select * from myc2;
+\copy
+\q
+copy myc2 to stdout (delimiter '|');
+copy myc2 to stdout (delimiter '\t|');
+copy myc2 to stdout (delimiter '\t');
+copy myc2 to stdout (delimiter 'x');
+copy myc2 to stdout (delimiter ' ');
+copy myc2 to '/home/uxdb/mydata' with binary;
+\! iv mydata
+\! vi mydata
+create table myc3 as select * from myc2 where 1=2;
+copy myc3 from '/home/uxdb/mydata';
+copy myc3 from '/home/uxdb/mydata' with binary;
+select * from myc3 limit 100;
+copy myc3 to program 'gzip > /home/uxdb/mydata.gz';
+\! ls mydata*
+\! ls -lh mydata*
+create table myc4 as select * from myc3 where 1=2;
+copy myc4 from program 'gzip > /home/uxdb/mydata.gz';
+copy myc4 from program 'gzip < /home/uxdb/mydata.gz';
+copy myc4 from program 'gzip  /home/uxdb/mydata.gz';
+copy myc4 from program 'gzip  /home/uxdb/mydata.gz';
+\q
+\! vi ~/.uxpass
+\d
+\l
+\x
+select * from master_get_active_worker_nodes();
+\q
+select 1;
+\q

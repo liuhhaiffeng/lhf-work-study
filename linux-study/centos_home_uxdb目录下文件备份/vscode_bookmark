@@ -1,0 +1,1 @@
+ ereport(LOG, (errmsg("lrmd: lrm service is in frozen state, request is responsed with try again later")));

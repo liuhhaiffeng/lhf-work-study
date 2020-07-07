@@ -1,0 +1,10 @@
+break exec_simple_query
+disable
+break uxdb.c:942
+disable
+break uxdb.c:942
+disable
+break uxdb.c:1029
+disable
+break uxdb.c:1042
+disable

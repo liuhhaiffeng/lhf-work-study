@@ -107,3 +107,89 @@ q: 进入命令历史编辑。
 vim help查看方式(:h  或 :help)
 :h %
 :h %:h
+
+
+
+## vim 关闭 :ls 中多个文件中的一个
+
+:bd        # 关闭 :ls 中的当前文件
+
+:bd n     # 关闭 :ls 中序号为n的文件
+
+
+
+更多参见 :h  bd
+
+
+
+## vim 关闭 sp, vsp的切分窗口, 只保留当前一个
+
+
+
+<C-W> o       # Ctrl-W  o  o是only的意思
+
+
+
+如果是想保留其中一个分割窗口,把其它的都关上,那么是 <C-W>o。o 是 Only 的意思
+
+
+
+## vim Shift+ZZ
+
+
+
+ZZ                      Write current file, if modified, and quit (same as
+                        ":x").  (Note: If there are several windows for the
+                        current file, the file is written if it was modified
+                        and the window is closed).
+
+
+
+## ## 在文件之间切换
+
+1.文件间切换
+Ctrl+6—下一个文件
+:bn—下一个文件
+:bp—上一个文件
+对于用(v)split在多个窗格中打开的文件，这种方法只会在当前窗格中切换不同的文件。
+2.在窗格间切换的方法
+Ctrl+w+方向键——切换到前／下／上／后一个窗格
+Ctrl+w+h/j/k/l ——同上
+Ctrl+ww——依次向后切换到下一个窗格中
+
+3.多文档编辑的命令如下
+
+:n     编辑下一个文档。
+:2n    编辑下两个文档。
+:N     编辑上一个文档。注意，该方法只能用于同时打开多个文档。
+:e 文档名    这是在进入vim后，不离开 vim 的情形下打开其他文档。
+:e# 或 Ctrl+6   编辑上一个文档,用于两个文档相互交换编辑时使用。?# 代表的是编辑前一次编辑的文档
+:files 或 :buffers 或 :ls   可以列出目前 缓冲区 中的所有文档。加号 + 表示 缓冲区已经被修改过了。＃代表上一次编辑的文档，%是目前正在编辑中的文档
+:b 文档名或编号   移至该文档。
+:f 或 Ctrl+g   显示当前正在编辑的文档名称。
+:f 檔名     改变编辑中的文档名。(file)
+
+**多文件切换**
+
+1. 通过vim打开多个文件（可以通过ctags或者cscope）
+2. ":ls"查看当前打开的buffer（文件）
+3. ":b num"切换文件（其中num为buffer list中的编号）
+
+https://www.cnblogs.com/pengdonglin137/p/3525297.html
+
+
+
+## vim 在 :ls 中直接输入命令进行文件的切换
+
+1.  :ls
+
+   会显示出文件列表
+
+2. :bn
+
+      这时, 在:ls的quicklist窗口中直接输入   :bn     , 这里n是你要切换的文件编号, 就可以直接切换了.  
+
+      > 以前不知道可以在 :ls 的窗口中直接输入命令,  :ls  和  :bn 总是要执行两次, 感觉很麻烦, 原来可以简单啊.
+
+
+
