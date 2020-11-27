@@ -12,15 +12,25 @@
 
 1、第一步
 
-$sudo perf record -e cpu-clock -g -p 28591
+$ sudo perf record -e cpu-clock -g -p 28591
 
-Ctrl+c结束执行后，在当前目录下会生成采样数据perf.data.
+-g 选项是告诉perf record额外记录函数的调用关系
+
+-e cpu-clock 指perf record监控的指标为cpu周期
+
+-p 指定需要record的进程pid
+
+程序运行完一段时间后, Ctrl+c结束执行后, perf record会生成一个名为perf.data的采样数据文件，如果之前已有，那么之前的perf.data文件会被覆盖
+
+获得这个perf.data文件之后，就需要perf report工具进行查看.
 
 2、第二步
 
 用perf script工具对perf.data进行解析
 
-perf script -i perf.data &> perf.unfold
+sudo perf script -i perf.data &> perf.unfold
+
+注意: 上述命令需要在 root 权限下运行, 否则生存的 perf.unfold 是不正确的 (例如: 文件体积很小)
 
 3、第三步
 
@@ -28,9 +38,35 @@ perf script -i perf.data &> perf.unfold
 
 #./stackcollapse-perf.pl perf.unfold &> perf.folded
 
+或
+
+sudo ./stackcollapse-perf.pl perf.unfold &> perf.folded
+
+
+
 4、最后生成svg图：
 
-./flamegraph.pl perf.folded > perf.svg
+sudo ./flamegraph.pl perf.folded > perf.svg
+
+
+
+## 注意
+
+上述第一步, 采集的数据时间越长, 生成的"火焰图"越好.
+
+[如何读懂火焰图？](https://ruanyifeng.com/blog/2017/09/flame-graph.html)
+
+
+
+[如何读懂火焰图？](https://www.cnblogs.com/tcicy/p/8491899.html)
+
+Off-CPU 火焰图
+
+
+
+Linux火焰图性能分析
+
+https://zhuanlan.zhihu.com/p/85654612
 
 
 ## 参考

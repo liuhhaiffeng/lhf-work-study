@@ -193,3 +193,69 @@ https://www.cnblogs.com/pengdonglin137/p/3525297.html
 
 
 
+## vim状态保存和恢复
+
+[vim状态保存跟恢复](https://www.cnblogs.com/zhangshuli-1989/p/hq_vim_151019165.html)
+
+当我们结束了一天的工作的时候，可能手头的工作仅仅进行了一半，比如我们正在用vim修改一个android 问题，我们定位了问题关键，牵扯到了好几个类，如果这时候我们直接把vim关闭了，那我们下次还要重新打开，很麻烦。其实，这时候我们可以通过如下的两条命令来保存当前的状态，并在需要的时候重新打开。
+
+```
+mksession            --进入命令行模式，执行.缺省生成文件名为Session.vim
+source sessionfile   --在vim命令行模式下，执行此命令
+
+快捷键:
+mks!
+so sessionfile
+```
+
+
+
+## [在Vim中快速从垂直分割切换到水平分割](https://my.oschina.net/u/3797416/blog/3154575)
+
+当您有两个*或多个*水平或垂直打开的窗口并希望将它们*全部*切换到另一个方向时，您可以使用以下内容：
+
+（切换到水平）
+
+```
+:windo wincmd K
+```
+
+（切换到垂直）
+
+```
+:windo wincmd H
+```
+
+它有效地单独使用^ W K或^ W H到达每个窗口。
+
+
+
+## 更加方便的(水平或垂直)分割
+
+ [在Vim中快速从垂直分割切换到水平分割](https://my.oschina.net/u/3797416/blog/3154575)
+
+在VIM中，请查看以下内容，了解您可能已做的不同选择：
+
+：帮助打开窗口
+
+例如：
+
+Ctrl - W s              水平分割               s: 水平
+Ctrl - W o              恢复到一个窗口     o: only one window
+Ctrl - W v              垂直分割            v:  垂直  vertical
+
+
+
+lhf注:灵活应用上面3个命令, 可以实现像vscode哪些任意分割窗口.
+
+
+
+## 关闭打开的某个文件
+
+执行 :bd 即可, 详细查看帮助  :h bd
+
+
+
+## vim+Doxygen实现注释自动生成
+
+ https://blog.csdn.net/bodybo/article/details/78685640
