@@ -108,3 +108,14 @@ gdb中, 输入 edit 即可.
 输入命令info signals或 info handle 查看信号
 用以下命令设置即可，收到SIGUSR1不会终止
 handle SIGUSR1 nostop
+
+
+
+## 将后台的gdb进程恢复到前台
+
+在gdb调试时, 有时候不小心按下了 ctrl+z, 将调试进程转到了后台, 以前不知道如何解决, 只能使用kill 杀掉后台gdb进程, 重写调试, 但在有些场合, gdb的调试机会非常宝贵, 终止了, 可能问题就不好再复现了.
+
+如果将后台进程恢复到前台呢? 步骤如下:
+
+1. jobs      执行jobs 命令查看当前在后台的job, 找到目标job号, 即job id.
+2. fg % "job id"   执行fg % x  命令,  其中x是目标job id.  fg后面一个百分号, 再加jobid, 即可将后台job恢复到前台.

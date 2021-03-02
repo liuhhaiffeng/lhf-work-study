@@ -545,3 +545,16 @@ lhf_ps: 即如果本地推送的分支在远端还没有创建, 使用git push -
 ## 查看远程分支的仓库地址
 
 git remote -v
+
+
+
+
+
+## [git 用远程覆盖本地](https://www.cnblogs.com/dcrenl/p/7218261.html)
+
+ 
+
+```
+git fetch --all
+git reset --hard origin/master
+```

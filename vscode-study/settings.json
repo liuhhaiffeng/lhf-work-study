@@ -1,0 +1,127 @@
+{
+    "C_Cpp.updateChannel": "Insiders",
+    "http.proxySupport": "off",
+    "terminal.integrated.shell.windows": "C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "git.ignoreLegacyWarning": true,
+    "files.associations": {
+        "*.pgc": "sql",        
+        "*.smi": "sql",
+        "*.std": "sql",
+        "*.nc": "sql",
+        "*.ok": "sql",
+        "*.pv1": "sql",
+        "*.pv2": "sql",
+        "*.pv3": "sql",
+        "*.pv4": "sql",
+        "README": "markdown",
+        "README*": "markdown"
+    },
+    "editor.largeFileOptimizations": false,
+    "files.exclude": {
+        "**/.classpath": true,
+        "**/.DS_Store": true,
+        "**/.factorypath": true,
+        "**/.git": true,
+        "**/.git*": true,
+        "**/.gitignore": true,
+        "**/.hg": true,
+        "**/.project": true,
+        "**/.settings": true,
+        "**/.svn": true,
+        "**/.tags*": true,
+        "**/.vscode": true,
+        "**/*.o": true,
+        "**/*.taghl": true,
+        "**/CVS": true,
+        "**/GPATH": true,
+        "**/GRTAGS": true,
+        "**/GTAGS": true,
+        "**/Makefile*": true,
+        "**/objfiles.txt": true,
+        "**/tags": true
+    },
+    "git.autofetch": true,
+    "editor.suggestSelection": "first",
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+    "workbench.sideBar.location": "left",
+    "maven.executable.path": "C:\\Program Files (x86)\\apache-maven-3.6.3\\bin",
+    "java.errors.incompleteClasspath.severity": "ignore",
+    "window.zoomLevel": 0,
+    "search.exclude": {
+        "**/*.po": true,
+        "**/*.taghl": true
+    },
+    "workbench.activityBar.visible": true,
+    "extensions.ignoreRecommendations": true,
+    "search.maintainFileSearchCache": true,
+    "remote.SSH.remotePlatform": {
+        "192.168.137.59_uxdb": "linux",
+        "192.168.137.59_postgres": "linux",
+        "192.168.137.59_root": "linux",
+        "192.168.137.59_root_2": "linux",
+        "192.30.0.101_uxdb": "linux",
+        "192.30.0.105_postgres": "linux"
+    },
+    "editor.renderControlCharacters": false,
+    "editor.selectionHighlight": false,
+    "editor.occurrencesHighlight": false,
+    "editor.matchBrackets": false,
+    "vim.handleKeys": {
+        "<C-b>": false,
+        "<C-j>": false,
+        "<C-f>": false,
+        "<C-t>": false,
+        "<C-d>": true,
+        "<C-h>": false,
+        "<C-w>": false,
+        "<C-x>": false,
+        "<C-c>": false,
+    },
+    "editor.fontFamily": "JetBrains Mono, Cascadia Code, Consolas, 'Courier New', monospace",
+    "editor.rulers": [
+        80,
+        100,
+        120
+    ],
+    "vsicons.dontShowNewVersionMessage": true,
+    "window.menuBarVisibility": "default",
+    "workbench.iconTheme": "material-icon-theme",
+    "files.autoSave": "off",
+    "bookmarks.saveBookmarksInProject": true,
+    "bookmarks.sideBar.expanded": true,
+    "bookmarks.useWorkaroundForFormatters": true,
+    "selectinsidesidebar.defaultStyle": {
+        "backgroundColor": "FF0000",
+        "overviewRulerColor": "00FF00"
+    },
+    "terminal.integrated.shell.linux": "/usr/bin/bash",
+    "breadcrumbs.enabled": true,
+    "editor.renderWhitespace": "none",
+    "editor.minimap.enabled": false,
+    "winopacity.opacity": 200,
+    "vim.normalModeKeyBindings": [
+	{
+		"before": ["j"],
+		"after": ["j", "z", "z"]
+	},
+	{
+		"before": ["k"],
+		"after": ["k", "z", "z"]
+    }    
+],
+"vim.insertModeKeyBindings": [
+    {
+        "before": ["j", "j"],
+        "after": ["esc", "esc"]
+    }
+],
+"vim.autoSwitchInputMethod.obtainIMCmd": "D:/im-select.exe",
+"vim.autoSwitchInputMethod.switchIMCmd": "D:/im-select.exe {im} && D:/im-select.exe 2052",
+"vim.autoSwitchInputMethod.defaultIM": "1033",
+"vim.autoSwitchInputMethod.enable": true,
+"select-highlight-cochineal-color.matchBrackets": false,
+"workbench.colorTheme": "Atom One Dark",
+"workbench.editor.enablePreview": false,
+"hediet.vscode-drawio.local-storage": "eyIuZHJhd2lvLWNvbmZpZyI6IntcImxhbmd1YWdlXCI6XCJcIixcImN1c3RvbUZvbnRzXCI6W10sXCJsaWJyYXJpZXNcIjpcImdlbmVyYWw7YmFzaWM7YXJyb3dzMjtmbG93Y2hhcnRcIixcImN1c3RvbUxpYnJhcmllc1wiOltcIkwuc2NyYXRjaHBhZFwiXSxcInBsdWdpbnNcIjpbXSxcInJlY2VudENvbG9yc1wiOltdLFwiZm9ybWF0V2lkdGhcIjoyNDAsXCJjcmVhdGVUYXJnZXRcIjpmYWxzZSxcInBhZ2VGb3JtYXRcIjp7XCJ4XCI6MCxcInlcIjowLFwid2lkdGhcIjo4MjcsXCJoZWlnaHRcIjoxMTY5fSxcInNlYXJjaFwiOnRydWUsXCJzaG93U3RhcnRTY3JlZW5cIjp0cnVlLFwiZ3JpZENvbG9yXCI6XCIjZDBkMGQwXCIsXCJkYXJrR3JpZENvbG9yXCI6XCIjODdBRUIwXCIsXCJhdXRvc2F2ZVwiOnRydWUsXCJyZXNpemVJbWFnZXNcIjpudWxsLFwib3BlbkNvdW50ZXJcIjowLFwidmVyc2lvblwiOjE4LFwidW5pdFwiOjEsXCJpc1J1bGVyT25cIjpmYWxzZSxcInVpXCI6XCJcIn0ifQ=="
+}
+

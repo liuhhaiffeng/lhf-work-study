@@ -156,6 +156,75 @@ C/C++
 
 
 
+### 主题插件
+
+Atom One Dark Theme
+
+> 名称: Atom One Dark Theme
+> ID: akamud.vscode-theme-onedark
+> 说明: One Dark Theme based on Atom
+> 版本: 2.2.2
+> 发布者: Mahmoud Ali
+> VS Marketplace 链接: https://marketplace.visualstudio.com/items?itemName=akamud.vscode-theme-onedark
+
+One Monokai Theme
+
+> 名称: One Monokai Theme
+> ID: azemoh.one-monokai
+> 说明: A cross between Monokai and One Dark theme
+> 版本: 0.5.0
+> 发布者: Joshua Azemoh
+> VS Marketplace 链接: https://marketplace.visualstudio.com/items?itemName=azemoh.one-monokai
+
+### 其他
+
+Back and Forward Buttons
+
+> 名称: Back and Forward Buttons
+> ID: baileyfirman.vscode-back-forward-buttons
+> 说明: Navigate forwards and backwards using buttons in the status bar
+> 版本: 1.0.1
+> 发布者: Bailey Firman
+> VS Marketplace 链接: https://marketplace.visualstudio.com/items?itemName=baileyfirman.vscode-back-forward-buttons
+
+Fuzzy Tag For C/C++
+
+> 名称: Fuzzy Tag For C/C++
+> ID: joeylu-vscode.fuzzy-tag
+> 说明: Fuzzy tag search based on Gtags
+> 版本: 0.0.5
+> 发布者: Joey Lu
+> VS Marketplace 链接: https://marketplace.visualstudio.com/items?itemName=joeylu-vscode.fuzzy-tag
+
+Header source switch
+
+> 名称: Header source switch
+> ID: ryzngard.vscode-header-source
+> 说明: Header-source switcher for vscode
+> 版本: 1.3.0
+> 发布者: Andrew Hall
+> VS Marketplace 链接: https://marketplace.visualstudio.com/items?itemName=ryzngard.vscode-header-source
+
+highlight
+
+> 名称: highlight
+> ID: debugpig.highlight
+> 说明: Highlight selected words
+> 版本: 0.1.0
+> 发布者: debugpig
+> VS Marketplace 链接: https://marketplace.visualstudio.com/items?itemName=debugpig.highlight
+
+select-highlight-cochineal-color
+
+> 名称: select-highlight-cochineal-color
+> ID: ebicochineal.select-highlight-cochineal-color
+> 说明: select-highlight-cochineal-color
+> 版本: 0.2.4
+> 发布者: ebicochineal
+> VS Marketplace 链接: https://marketplace.visualstudio.com/items?itemName=ebicochineal.select-highlight-cochineal-color
+
+
+
 ## 选中大括号内的内容  
 
 需要对应插件的支持
