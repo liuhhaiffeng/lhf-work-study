@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<!-- saved from url=(0045)https://www.cnblogs.com/l2017/p/11614545.html -->
+<html lang="zh-cn"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="origin">
+    <meta name="description" content="1、atomic_flag 和atomic&amp;lt;&amp;gt;的区别，atomic_flag 无论无锁是多大代价（一些cpu可能无锁代价大），都保证atomic_flag&amp;#160;是无锁的。atomic">
+    <meta property="og:description" content="1、atomic_flag 和atomic&amp;lt;&amp;gt;的区别，atomic_flag 无论无锁是多大代价（一些cpu可能无锁代价大），都保证atomic_flag&amp;#160;是无锁的。atomic">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>盲猜原子变量、内存屏障、内存模型、锁之间的关系 - ff_d - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="https://common.cnblogs.com/favicon.svg" type="image/svg+xml">
+    
+    <link rel="stylesheet" href="./盲猜原子变量、内存屏障、内存模型、锁之间的关系 - ff_d - 博客园_files/blog-common.min.css">
+    <link id="MainCss" rel="stylesheet" href="./盲猜原子变量、内存屏障、内存模型、锁之间的关系 - ff_d - 博客园_files/bundle-simpleblue.min.css">
+    
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="./盲猜原子变量、内存屏障、内存模型、锁之间的关系 - ff_d - 博客园_files/bundle-simpleblue-mobile.min.css">
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/l2017/rss">
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/l2017/rsd.xml">
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/l2017/wlwmanifest.xml">
+    <script async="" src="./盲猜原子变量、内存屏障、内存模型、锁之间的关系 - ff_d - 博客园_files/analytics.js.下载"></script><script>
+        var currentBlogId = 354579;
+        var currentBlogApp = 'l2017';
+        var cb_enable_mathjax = false;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'SimpleBlue';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2019-09-30 11:48';
+        </script>
+    <script src="./盲猜原子变量、内存屏障、内存模型、锁之间的关系 - ff_d - 博客园_files/jquery-2.2.0.min.js.下载"></script>
+    <script src="./盲猜原子变量、内存屏障、内存模型、锁之间的关系 - ff_d - 博客园_files/blog-common.min.js.下载"></script><style type="text/css">.medium-zoom-overlay{position:fixed;top:0;right:0;bottom:0;left:0;opacity:0;transition:opacity .3s;will-change:opacity}.medium-zoom--opened .medium-zoom-overlay{cursor:pointer;cursor:zoom-out;opacity:1}.medium-zoom-image{cursor:pointer;cursor:zoom-in;transition:transform .3s cubic-bezier(.2,0,.2,1)!important}.medium-zoom-image--hidden{visibility:hidden}.medium-zoom-image--opened{position:relative;cursor:pointer;cursor:zoom-out;will-change:transform}</style>
+    
+    
+    
+</head>
+<body class="has-navbar">
+    <a name="top"></a>
+        <div id="bannerbar" class="bannerbar-mobile formobile">
+            <a href="https://developer.aliyun.com/learning/trainingcamp/vision/3?utm_content=g_1000241565" target="_blank" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;aliyun-blog-mobile-banner&#39;)">
+                <img src="./盲猜原子变量、内存屏障、内存模型、锁之间的关系 - ff_d - 博客园_files/1-20210221123548373-1171207978.jpg" alt="">
+            </a>
+        </div>
+    <div id="top_nav" class="navbar forpc">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding"><a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="./盲猜原子变量、内存屏障、内存模型、锁之间的关系 - ff_d - 博客园_files/logo.svg" alt="博客园Logo"></a></li>
+                <li><a href="https://www.cnblogs.com/" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;skin-navbar-sitehome&#39;)">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;skin-navbar-news&#39;)">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;skin-navbar-q&#39;)">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;skin-navbar-brands&#39;)">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;skin-navbar-ing&#39;)">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;skin-navbar-edu&#39;)">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3">
+                        <button type="submit" id="zzk_search_button">
+                            <img src="./盲猜原子变量、内存屏障、内存模型、锁之间的关系 - ff_d - 博客园_files/search.svg" alt="搜索">
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客" style="display: none;">
+                        <img id="myblog_icon" class="navbar-icon" src="./盲猜原子变量、内存屏障、内存模型、锁之间的关系 - ff_d - 博客园_files/myblog.svg" alt="我的博客">
+                    </a>
+                    <a class="navbar-user-info navbar-blog" href="https://i.cnblogs.com/EditPosts.aspx?opt=1" alt="写随笔" title="写随笔" style="display: none;">
+                        <img id="new_post_icon" class="navbar-icon" src="./盲猜原子变量、内存屏障、内存模型、锁之间的关系 - ff_d - 博客园_files/newpost.svg" alt="写随笔">
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息" style="display: none;">
+                        <img id="msg_icon" class="navbar-icon" src="./盲猜原子变量、内存屏障、内存模型、锁之间的关系 - ff_d - 博客园_files/message.svg" alt="短消息">
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown" style="display: none;">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="./盲猜原子变量、内存屏障、内存模型、锁之间的关系 - ff_d - 博客园_files/avatar-default.svg" alt="用户头像">
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" onclick="logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/" style="display: inline;">注册</a>
+                    <a class="navbar-anonymous" href="javascript:void(0);" onclick="login()" style="display: inline;">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+    <div id="home">
+    <div id="header">
+        <div id="blogTitle">
+            <div class="title"><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/l2017/">long_ao_tian</a>
+</div>
+<div class="subtitle"></div>
+
+        </div>
+        <div id="navigator">
+            
+<ul id="navList">
+    <li id="nav_sitehome"><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+    <li id="nav_myhome">
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/l2017/">
+首页</a>
+</li>
+    <li id="nav_newpost">
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+    <li id="nav_contact">
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/ff_d">
+联系</a></li>
+    <li id="nav_rss">
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/l2017/rss/">
+订阅</a></li>
+    <li id="nav_admin">
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+            <div class="blogStats">
+                
+<span id="stats_post_count">随笔 - 134&nbsp;</span>
+<span id="stats_article_count">文章 - 0&nbsp;</span>
+<span id="stats_comment_count">评论 - 7&nbsp;</span>
+<span id="stats_total_view_count">阅读 - 
+<span title="总阅读数: 41458">
+41458</span></span>
+            </div>
+        </div>
+    </div>
+    <div id="main">
+        <div id="mainContent">
+            <div class="forFlow">
+                <div id="post_detail">
+    <div id="topics">
+        <div class="post">
+            <h1 class="postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle" href="https://www.cnblogs.com/l2017/p/11614545.html">
+    <span>盲猜原子变量、内存屏障、内存模型、锁之间的关系</span>
+    
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                
+<div id="cnblogs_post_body" class="blogpost-body">
+    <p>1、atomic_flag 和atomic&lt;&gt;的区别，atomic_flag 无论无锁是多大代价（一些cpu可能无锁代价大），都保证atomic_flag&nbsp;是无锁的。atomic&lt;&gt;会视情况，可能是有锁的也可能是无锁的，哪个开销小选哪个。</p>
+<p>2、C++内存模型可以被看作是C++程序和计算机系统（包括编译器，多核CPU等可能对程序进行乱序优化的软硬件）之间的契约，它规定了多个线程访问同一个内存地址时的语义，以及某个线程对内存地址的更新何时能被其它线程看见。C++11 中的 atomic library 中定义了以下6种语义来对内存操作的行为进行约定，这些语义分别规定了不同的重排规则（即插入内存屏障的规则，<span><span>作为同步点</span><span>在线程之间</span><span>同步</span></span>）。虽然共有 6 个选项,但它们表示的是三种内存模型:</p>
+<div>
+<div>
+<ul>
+<li>sequential consistent(memory_order_seq_cst),</li>
+<li>relaxed(memory_order_seq_cst).</li>
+<li>acquire release(memory_order_consume, memory_order_acquire, memory_order_release, memory_order_acq_rel),</li>
+</ul>
+</div>
+</div>
+<div class="cnblogs_Highlighter sh-gutter">
+<div><div id="highlighter_656390" class="syntaxhighlighter  cpp"><div class="toolbar"><span><a href="https://www.cnblogs.com/l2017/p/11614545.html#" class="toolbar_item command_help help">?</a></span></div><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div><div class="line number2 index1 alt1">2</div><div class="line number3 index2 alt2">3</div><div class="line number4 index3 alt1">4</div><div class="line number5 index4 alt2">5</div><div class="line number6 index5 alt1">6</div><div class="line number7 index6 alt2">7</div><div class="line number8 index7 alt1">8</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="cpp keyword bold">typedef</code> <code class="cpp keyword bold">enum</code> <code class="cpp plain">memory_order {</code></div><div class="line number2 index1 alt1"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">memory_order_relaxed,&nbsp;&nbsp; </code><code class="cpp comments">// relaxed 用于读操作/写操作</code></div><div class="line number3 index2 alt2"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">memory_order_consume,&nbsp;&nbsp; </code><code class="cpp comments">// consume 用于读操作</code></div><div class="line number4 index3 alt1"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">memory_order_acquire,&nbsp;&nbsp; </code><code class="cpp comments">// acquire 用于读操作</code></div><div class="line number5 index4 alt2"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">memory_order_release,&nbsp;&nbsp; </code><code class="cpp comments">// release 用于写操作</code></div><div class="line number6 index5 alt1"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">memory_order_acq_rel,&nbsp;&nbsp; </code><code class="cpp comments">// 相当于acquire和release </code></div><div class="line number7 index6 alt2"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">memory_order_seq_cst&nbsp;&nbsp;&nbsp; </code><code class="cpp comments">// sequentially consistent 用于读操作/写操作</code></div><div class="line number8 index7 alt1"><code class="cpp plain">} memory_order;&lt;br&gt;&lt;br&gt;&lt;br&gt;</code></div></div></td></tr></tbody></table></div></div>
+<div><div id="highlighter_902241" class="syntaxhighlighter  cpp"><div class="toolbar"><span><a href="https://www.cnblogs.com/l2017/p/11614545.html#" class="toolbar_item command_help help">?</a></span></div><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="cpp plain">memory_order_relaxed 只要求在同一线程中，对同一原子变量的访问不可以被重排，不插内存屏障，最宽松。</code></div></div></td></tr></tbody></table></div></div>
+<div><div id="highlighter_323921" class="syntaxhighlighter  cpp"><div class="toolbar"><span><a href="https://www.cnblogs.com/l2017/p/11614545.html#" class="toolbar_item command_help help">?</a></span></div><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="cpp plain">memory_order_acquire 和 memory_order_release 是一对的，memory_order_acq_rel同时包括这一对，原子变量写之后的所有写操作才能执行，原子变量读之前的所有读操作都会执行好，</code></div></div></td></tr></tbody></table></div></div>
+<div><div id="highlighter_642300" class="syntaxhighlighter  cpp"><div class="toolbar"><span><a href="https://www.cnblogs.com/l2017/p/11614545.html#" class="toolbar_item command_help help">?</a></span></div><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="cpp plain">memory_order_consume 原子变量读之前的相关具有依赖性的数据的读操作都会执行好</code></div></div></td></tr></tbody></table></div></div>
+<div><div id="highlighter_943664" class="syntaxhighlighter  cpp"><div class="toolbar"><span><a href="https://www.cnblogs.com/l2017/p/11614545.html#" class="toolbar_item command_help help">?</a></span></div><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="cpp plain">memory_order_seq_cst 最严格。严格按照顺序来</code></div></div></td></tr></tbody></table></div></div>
+</div>
+<p>　　</p>
+<div class="cnblogs_Highlighter sh-gutter">
+<div><div id="highlighter_11025" class="syntaxhighlighter  cpp"><div class="toolbar"><span><a href="https://www.cnblogs.com/l2017/p/11614545.html#" class="toolbar_item command_help help">?</a></span></div><table border="0" cellpadding="0" cellspacing="0"><tbody><tr><td class="gutter"><div class="line number1 index0 alt2">1</div><div class="line number2 index1 alt1">2</div><div class="line number3 index2 alt2">3</div><div class="line number4 index3 alt1">4</div><div class="line number5 index4 alt2">5</div><div class="line number6 index5 alt1">6</div><div class="line number7 index6 alt2">7</div><div class="line number8 index7 alt1">8</div><div class="line number9 index8 alt2">9</div><div class="line number10 index9 alt1">10</div><div class="line number11 index10 alt2">11</div><div class="line number12 index11 alt1">12</div><div class="line number13 index12 alt2">13</div><div class="line number14 index13 alt1">14</div><div class="line number15 index14 alt2">15</div><div class="line number16 index15 alt1">16</div><div class="line number17 index16 alt2">17</div><div class="line number18 index17 alt1">18</div><div class="line number19 index18 alt2">19</div><div class="line number20 index19 alt1">20</div><div class="line number21 index20 alt2">21</div><div class="line number22 index21 alt1">22</div><div class="line number23 index22 alt2">23</div><div class="line number24 index23 alt1">24</div><div class="line number25 index24 alt2">25</div><div class="line number26 index25 alt1">26</div><div class="line number27 index26 alt2">27</div><div class="line number28 index27 alt1">28</div><div class="line number29 index28 alt2">29</div><div class="line number30 index29 alt1">30</div><div class="line number31 index30 alt2">31</div><div class="line number32 index31 alt1">32</div><div class="line number33 index32 alt2">33</div><div class="line number34 index33 alt1">34</div><div class="line number35 index34 alt2">35</div><div class="line number36 index35 alt1">36</div><div class="line number37 index36 alt2">37</div><div class="line number38 index37 alt1">38</div></td><td class="code"><div class="container"><div class="line number1 index0 alt2"><code class="cpp plain">mscv简化了区别</code></div><div class="line number2 index1 alt1">&nbsp;</div><div class="line number3 index2 alt2"><code class="cpp plain">memory_order_relaxed：</code></div><div class="line number4 index3 alt1"><code class="cpp keyword bold">void</code> <code class="cpp plain">Store_relaxed_4(</code><code class="cpp keyword bold">volatile</code> <code class="cpp plain">_Uint4_t *_Tgt, _Uint4_t _Value)</code></div><div class="line number5 index4 alt2"><code class="cpp plain">{&nbsp;&nbsp; </code></div><div class="line number6 index5 alt1"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">__iso_volatile_store32((</code><code class="cpp keyword bold">volatile</code> <code class="cpp color1 bold">int</code> <code class="cpp plain">*)_Tgt, _Value);</code></div><div class="line number7 index6 alt2"><code class="cpp plain">}</code></div><div class="line number8 index7 alt1"><code class="cpp plain">memory_order_release：</code></div><div class="line number9 index8 alt2"><code class="cpp keyword bold">void</code> <code class="cpp plain">Store_release_4(</code><code class="cpp keyword bold">volatile</code> <code class="cpp plain">_Uint4_t *_Tgt, _Uint4_t _Value)</code></div><div class="line number10 index9 alt1"><code class="cpp plain">{</code></div><div class="line number11 index10 alt2"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">_Memory_barrier();</code></div><div class="line number12 index11 alt1"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">__iso_volatile_store32((</code><code class="cpp keyword bold">volatile</code> <code class="cpp color1 bold">int</code> <code class="cpp plain">*)_Tgt, _Value);</code></div><div class="line number13 index12 alt2"><code class="cpp plain">}</code></div><div class="line number14 index13 alt1"><code class="cpp plain">memory_order_seq_cst：</code></div><div class="line number15 index14 alt2"><code class="cpp keyword bold">void</code> <code class="cpp plain">Store_seq_cst_4(</code><code class="cpp keyword bold">volatile</code> <code class="cpp plain">_Uint4_t *_Tgt, _Uint4_t _Value)</code></div><div class="line number16 index15 alt1"><code class="cpp plain">{</code></div><div class="line number17 index16 alt2"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">_Memory_barrier();</code></div><div class="line number18 index17 alt1"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">_iso_volatile_store32((</code><code class="cpp keyword bold">volatile</code> <code class="cpp color1 bold">int</code> <code class="cpp plain">*)_Tgt, _Value);</code></div><div class="line number19 index18 alt2"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">_Memory_barrier();</code></div><div class="line number20 index19 alt1"><code class="cpp plain">}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </code></div><div class="line number21 index20 alt2"><code class="cpp plain">memory_order_relaxed：</code></div><div class="line number22 index21 alt1"><code class="cpp plain">_Uint4_t Load_relaxed_4(</code><code class="cpp keyword bold">volatile</code> <code class="cpp plain">_Uint4_t *_Tgt)</code></div><div class="line number23 index22 alt2"><code class="cpp plain">{</code></div><div class="line number24 index23 alt1"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">_Uint4_t _Value;</code></div><div class="line number25 index24 alt2"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">_Value = __iso_volatile_load32((</code><code class="cpp keyword bold">volatile</code> <code class="cpp color1 bold">int</code> <code class="cpp plain">*)_Tgt);</code></div><div class="line number26 index25 alt1"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp keyword bold">return</code> <code class="cpp plain">(_Value);</code></div><div class="line number27 index26 alt2"><code class="cpp plain">}</code></div><div class="line number28 index27 alt1">&nbsp;</div><div class="line number29 index28 alt2"><code class="cpp plain">memory_order_consume：</code></div><div class="line number30 index29 alt1"><code class="cpp plain">memory_order_acquire：</code></div><div class="line number31 index30 alt2"><code class="cpp plain">memory_order_seq_cst：</code></div><div class="line number32 index31 alt1"><code class="cpp keyword bold">inline</code> <code class="cpp plain">_Uint4_t _Load_seq_cst_4(</code><code class="cpp keyword bold">volatile</code> <code class="cpp plain">_Uint4_t *_Tgt)</code></div><div class="line number33 index32 alt2"><code class="cpp plain">{&nbsp;&nbsp; </code></div><div class="line number34 index33 alt1"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">_Uint4_t _Value;</code></div><div class="line number35 index34 alt2"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">_Value = __iso_volatile_load32((</code><code class="cpp keyword bold">volatile</code> <code class="cpp color1 bold">int</code> <code class="cpp plain">*)_Tgt);</code></div><div class="line number36 index35 alt1"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp plain">_Memory_barrier();</code></div><div class="line number37 index36 alt2"><code class="cpp spaces">&nbsp;&nbsp;&nbsp;&nbsp;</code><code class="cpp keyword bold">return</code> <code class="cpp plain">(_Value);</code></div><div class="line number38 index37 alt1"><code class="cpp plain">}</code></div></div></td></tr></tbody></table></div></div>
+</div>
+<p>3、个人理解，锁由原子变量和内存屏障实现，原子变量和内存屏障是硬件支持的。</p>
+<p>4、如果直接使用锁来保护数据，则不用考虑内存模型，但如果使用原子变量、无锁算法追求更高的性能，则需要考虑好内存模型。</p>
+<p>5、内存模型由内存屏障体现</p>
+</div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+<div id="EntryTag">
+    标签: 
+            <a href="https://www.cnblogs.com/l2017/tag/c%2B%2B/">c++</a></div>
+
+    <div id="blog_post_info">
+<div id="green_channel">
+        <span style="color:red">谢谢推荐！</span>
+        <a id="green_channel_follow" onclick="follow(&#39;bbe61136-06ac-4d80-65cc-08d496e65ef5&#39;);" href="javascript:void(0);">关注我</a>
+    <a id="green_channel_favorite" onclick="AddToWz(cb_entryId);return false;" href="javascript:void(0);">收藏该文</a>
+    <a id="green_channel_weibo" href="javascript:void(0);" title="分享至新浪微博" onclick="ShareToTsina()"><img src="./盲猜原子变量、内存屏障、内存模型、锁之间的关系 - ff_d - 博客园_files/icon_weibo_24.png" alt=""></a>
+    <a id="green_channel_wechat" href="javascript:void(0);" title="分享至微信" onclick="shareOnWechat()"><img src="./盲猜原子变量、内存屏障、内存模型、锁之间的关系 - ff_d - 博客园_files/wechat.png" alt=""></a>
+</div>
+<div id="author_profile">
+    <div id="author_profile_info" class="author_profile_info">
+            <a href="https://home.cnblogs.com/u/l2017/" target="_blank"><img src="./盲猜原子变量、内存屏障、内存模型、锁之间的关系 - ff_d - 博客园_files/sample_face.gif" class="author_avatar" alt=""></a>
+        <div id="author_profile_detail" class="author_profile_info">
+            <a href="https://home.cnblogs.com/u/l2017/">ff_d</a><br>
+            <a href="https://home.cnblogs.com/u/l2017/followees/">关注 - 4</a><br>
+            <a href="https://home.cnblogs.com/u/l2017/followers/">粉丝 - 5</a>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div id="author_profile_honor"></div>
+    <div id="author_profile_follow">
+                <a href="javascript:void(0);" onclick="follow(&#39;bbe61136-06ac-4d80-65cc-08d496e65ef5&#39;);return false;">+加关注</a>
+    </div>
+</div>
+<div id="div_digg">
+    <div class="diggit" onclick="votePost(11614545,&#39;Digg&#39;)">
+        <span class="diggnum" id="digg_count">0</span>
+    </div>
+    <div class="buryit" onclick="votePost(11614545,&#39;Bury&#39;)">
+        <span class="burynum" id="bury_count">0</span>
+    </div>
+    <div class="clear"></div>
+    <div class="diggword" id="digg_tips" style="color: red;">请先<a href="javascript:void(0);" onclick="login()">登录</a></div>
+</div>
+
+<script type="text/javascript">
+    currentDiggType = 0;
+</script></div>
+    <div class="clear"></div>
+    <div id="post_next_prev">
+
+    <a href="https://www.cnblogs.com/l2017/p/11373315.html" class="p_n_p_prefix">« </a> 上一篇：    <a href="https://www.cnblogs.com/l2017/p/11373315.html" title="发布于 2019-08-18 18:14">四、c++总结------linux多线程服务端编程</a>
+    <br>
+    <a href="https://www.cnblogs.com/l2017/p/11665007.html" class="p_n_p_prefix">» </a> 下一篇：    <a href="https://www.cnblogs.com/l2017/p/11665007.html" title="发布于 2019-10-13 09:41">TIP/Collision-Free Video Synopsis Incorporating Object Speed and Size Changes Code</a>
+
+</div>
+</div>
+            </div>
+            <div class="postDesc">posted @ 
+<span id="post-date">2019-09-30 23:48</span>&nbsp;
+<a href="https://www.cnblogs.com/l2017/">ff_d</a>&nbsp;
+阅读(<span id="post_view_count">276</span>)&nbsp;
+评论(<span id="post_comment_count">0</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=11614545" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(11614545);return false;">收藏</a></div>
+        </div>
+        <script src="./盲猜原子变量、内存屏障、内存模型、锁之间的关系 - ff_d - 博客园_files/highlight.min.js.下载"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 354579, cb_blogApp = 'l2017', cb_blogUserGuid = 'bbe61136-06ac-4d80-65cc-08d496e65ef5';
+    var cb_entryId = 11614545, cb_entryCreatedDate = '2019-09-30 23:48', cb_postType = 1;
+    updatePostStats(
+        [cb_entryId],
+        function(id, count) { $("#post_view_count").text(count) },
+        function(id, count) { $("#post_comment_count").text(count) })
+    zoomManager.apply("#cnblogs_post_body img");
+</script>
+        <a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="https://www.cnblogs.com/l2017/p/11614545.html#" onclick="return RefreshPage();">刷新页面</a><a href="https://www.cnblogs.com/l2017/p/11614545.html#top">返回顶部</a></div>
+    <div id="comment_form_container" style="visibility: visible;"><div class="login_tips">
+    登录后才能发表评论，立即 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return login(&#39;commentform&#39;);">登录</a> 或
+    <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return register();">注册</a>，
+    <a href="https://www.cnblogs.com/">访问</a> 网站首页
+</div>
+</div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2"></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="under-post-card">
+        <div id="div-gpt-ad-1592365906576-0" style="width: 300px; height: 250px;"></div>
+    </div>
+    <div id="under_post_card1"><div class="under-post-card"><b>AWS免费产品</b>：<br>· <a onclick="ga(&quot;send&quot;, &quot;event&quot;, &quot;Link&quot;, &quot;click&quot;, &quot;aws-underpost-card&quot;)" href="https://aws.amazon.com/cn/free/webapps/?trk=ba_a134p000006vc6OAAQ&amp;trkCampaign=webapps&amp;sc_channel=ba&amp;sc_campaign=cnblogs&amp;sc_outcome=Acquisition&amp;sc_geo=CHNA&amp;sc_country=CN&amp;sc_publisher=Others" target="_blank">如何在AWS上免费构建网站</a><br>· <a onclick="ga(&quot;send&quot;, &quot;event&quot;, &quot;Link&quot;, &quot;click&quot;, &quot;aws-underpost-card&quot;)" href="https://aws.amazon.com/cn/free/storage/?trk=ba_a134p000006vc7JAAQ&amp;trkCampaign=storage&amp;sc_channel=ba&amp;sc_campaign=cnblogs&amp;sc_outcome=Acquisition&amp;sc_geo=CHNA&amp;sc_country=CN&amp;sc_publisher=Others" target="_blank">AWS免费云存储解决方案</a><br>· <a onclick="ga(&quot;send&quot;, &quot;event&quot;, &quot;Link&quot;, &quot;click&quot;, &quot;aws-underpost-card&quot;)" href="https://aws.amazon.com/cn/free/database/?trk=ba_a134p000006vc7YAAQ&amp;trkCampaign=database&amp;sc_channel=ba&amp;sc_campaign=cnblogs&amp;sc_outcome=Acquisition&amp;sc_geo=CHNA&amp;sc_country=CN&amp;sc_publisher=Others" target="_blank">在AWS上免费构建数据库</a><br>· <a onclick="ga(&quot;send&quot;, &quot;event&quot;, &quot;Link&quot;, &quot;click&quot;, &quot;aws-underpost-card&quot;)" href="https://aws.amazon.com/cn/free/machine-learning/?trk=ba_a134p000006vc7nAAA&amp;trkCampaign=ML&amp;sc_channel=ba&amp;sc_campaign=cnblogs&amp;sc_outcome=Acquisition&amp;sc_geo=CHNA&amp;sc_country=CN&amp;sc_publisher=Others" target="_blank">AWS上的免费机器学习</a></div></div>
+    <div id="cnblogs_c2" class="under-post-card">
+        <div id="div-gpt-ad-1592366332455-0" style="width: 468px; height: 60px;"></div>
+    </div>
+    <div id="under_post_card2"><div class="itnews under-post-card">
+    <b>最新新闻</b>：
+    <br>
+ ·          <a href="https://news.cnblogs.com/n/688947/" target="_blank">研究称“微电机”可以更有效地治疗类风湿性关节炎</a>
+        <br>
+ ·          <a href="https://news.cnblogs.com/n/688946/" target="_blank">憋屈的吉利：已是自主品牌一哥，却争着给新势力代工？</a>
+        <br>
+ ·          <a href="https://news.cnblogs.com/n/688945/" target="_blank">无需邀请 亚马逊云游戏服务Luna现面向Fire TV用户开放加入</a>
+        <br>
+ ·          <a href="https://news.cnblogs.com/n/688944/" target="_blank">微软创意愿景梦碎：今后文件管理器不再显示3D Objects文件夹</a>
+        <br>
+ ·          <a href="https://news.cnblogs.com/n/688943/" target="_blank">EA：玩家将决定我们该开发什么游戏 包括《泰坦陨落》</a>
+        <br>
+    » <a href="https://news.cnblogs.com/" title="IT 新闻" target="_blank">更多新闻...</a>
+</div></div>
+    <div id="HistoryToday" class="under-post-card">
+<b>历史上的今天：</b>
+<br>
+
+2017-09-30    <a href="https://www.cnblogs.com/l2017/p/7613285.html">stream.fail()   eof()   EOF</a>
+    <br>
+</div>
+    <script type="text/javascript">
+       var commentManager = new blogCommentManager();
+       commentManager.renderComments(0);
+       fixPostBody();
+       deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);       deliverT2();
+       deliverC1C2();
+       loadNewsAndKb();
+       loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);       LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+       GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+       loadOptUnderPost();
+       GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+
+    </div>
+</div>
+            </div>
+        </div>
+
+        <div id="sideBar">
+            <div id="sideBarMain">
+                <div id="sidebar_news" class="newsItem">
+<h3 class="catListTitle">公告</h3>
+
+<div id="blog-news">
+    
+    <div id="profile_block">
+        昵称：
+        <a href="https://home.cnblogs.com/u/l2017/">
+            ff_d
+        </a>
+        <br>
+        园龄：
+        <a href="https://home.cnblogs.com/u/l2017/" title="入园时间：2017-05-09">
+            3年9个月
+        </a>
+        <br>
+        粉丝：
+        <a href="https://home.cnblogs.com/u/l2017/followers/">
+            5
+        </a>
+        <br>
+        关注：
+        <a href="https://home.cnblogs.com/u/l2017/followees/">
+            4
+        </a>
+        <div id="p_b_follow">
+<a href="javascript:void(0)" onclick="follow(&#39;bbe61136-06ac-4d80-65cc-08d496e65ef5&#39;)">+加关注</a></div>
+        <script>getFollowStatus('bbe61136-06ac-4d80-65cc-08d496e65ef5');</script>
+    </div>
+</div></div>
+<div id="sidebar_c3"></div>
+                <div id="calendar"><div id="blog-calendar" style="">
+
+<table id="blogCalendar" class="Cal" cellspacing="0" cellpadding="0" title="Calendar" border="0">
+    <tbody>
+        <tr>
+            <td colspan="7">
+                <table class="CalTitle" cellspacing="0" border="0">
+                    <tbody>
+                        <tr>
+                            <td class="CalNextPrev">
+                                <a href="javascript:void(0);" onclick="loadBlogCalendar(&#39;2021/01/25&#39;); return false;">&lt;</a>
+                            </td>
+                            <td align="center">2021年2月</td>
+                            <td align="right" class="CalNextPrev">
+                                <a href="javascript:void(0);" onclick="loadBlogCalendar(&#39;2021/03/25&#39;); return false;">&gt;</a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    <tr>
+        <th class="CalDayHeader" align="center" abbr="日" scope="col">日</th>
+        <th class="CalDayHeader" align="center" abbr="一" scope="col">一</th>
+        <th class="CalDayHeader" align="center" abbr="二" scope="col">二</th>
+        <th class="CalDayHeader" align="center" abbr="三" scope="col">三</th>
+        <th class="CalDayHeader" align="center" abbr="四" scope="col">四</th>
+        <th class="CalDayHeader" align="center" abbr="五" scope="col">五</th>
+        <th class="CalDayHeader" align="center" abbr="六" scope="col">六</th>
+    </tr>
+            <tr>
+                            <td class="CalOtherMonthDay" align="center">31</td>
+                        <td class="" align="center">
+                            1
+                        </td>
+                        <td class="" align="center">
+                            2
+                        </td>
+                        <td class="" align="center">
+                            3
+                        </td>
+                        <td class="" align="center">
+                            4
+                        </td>
+                        <td class="" align="center">
+                            5
+                        </td>
+                    <td class="CalWeekendDay" align="center">
+                        6
+                    </td>
+            </tr>
+                <tr>
+                        <td class="CalWeekendDay" align="center">
+                            7
+                        </td>
+                            <td class="" align="center">
+                                8
+                            </td>
+                            <td class="" align="center">
+                                9
+                            </td>
+                            <td class="" align="center">
+                                10
+                            </td>
+                            <td class="" align="center">
+                                11
+                            </td>
+                            <td class="" align="center">
+                                12
+                            </td>
+                        <td class="CalWeekendDay" align="center">
+                            13
+                        </td>
+                </tr>
+                <tr>
+                        <td class="CalWeekendDay" align="center">
+                            14
+                        </td>
+                            <td class="" align="center">
+                                15
+                            </td>
+                            <td class="" align="center">
+                                16
+                            </td>
+                            <td class="" align="center">
+                                17
+                            </td>
+                            <td class="" align="center">
+                                18
+                            </td>
+                            <td class="" align="center">
+                                19
+                            </td>
+                        <td class="CalWeekendDay" align="center">
+                            20
+                        </td>
+                </tr>
+                <tr>
+                        <td class="CalWeekendDay" align="center">
+                            21
+                        </td>
+                            <td class="" align="center">
+                                22
+                            </td>
+                            <td class="" align="center">
+                                23
+                            </td>
+                            <td class="" align="center">
+                                24
+                            </td>
+                            <td class="CalTodayDay" align="center">
+                                25
+                            </td>
+                            <td class="" align="center">
+                                26
+                            </td>
+                        <td class="CalWeekendDay" align="center">
+                            27
+                        </td>
+                </tr>
+                <tr>
+                        <td class="CalWeekendDay" align="center">
+                            28
+                        </td>
+                            <td class="CalOtherMonthDay" align="center">
+                                1
+                            </td>
+                            <td class="CalOtherMonthDay" align="center">
+                                2
+                            </td>
+                            <td class="CalOtherMonthDay" align="center">
+                                3
+                            </td>
+                            <td class="CalOtherMonthDay" align="center">
+                                4
+                            </td>
+                            <td class="CalOtherMonthDay" align="center">
+                                5
+                            </td>
+                        <td class="CalOtherMonthDay" align="center">
+                            6
+                        </td>
+                </tr>
+                <tr>
+                        <td class="CalOtherMonthDay" align="center">
+                            7
+                        </td>
+                            <td class="CalOtherMonthDay" align="center">
+                                8
+                            </td>
+                            <td class="CalOtherMonthDay" align="center">
+                                9
+                            </td>
+                            <td class="CalOtherMonthDay" align="center">
+                                10
+                            </td>
+                            <td class="CalOtherMonthDay" align="center">
+                                11
+                            </td>
+                            <td class="CalOtherMonthDay" align="center">
+                                12
+                            </td>
+                        <td class="CalOtherMonthDay" align="center">
+                            13
+                        </td>
+                </tr>
+    </tbody>
+</table></div></div>                
+                <script>loadBlogDefaultCalendar();</script>
+                <div id="leftcontentcontainer">
+                    <!-- begin:SingleColumn -->
+                    <div id="blog-sidecolumn"><!-- 搜索 -->
+<div id="sidebar_search" class="sidebar-block">
+    <div id="sidebar_search" class="mySearch">
+        <h3 class="catListTitle">搜索</h3>
+        <div id="sidebar_search_box">
+            <div id="widget_my_zzk" class="div_my_zzk">
+                <input type="text" id="q" onkeydown="return zzk_go_enter(event);" class="input_my_zzk">&nbsp;<input onclick="zzk_go()" type="button" value="找找看" id="btnZzk" class="btn_my_zzk">
+            </div>
+            <div id="widget_my_google" class="div_my_zzk">
+                <input type="text" name="google_q" id="google_q" onkeydown="return google_go_enter(event);" class="input_my_zzk">&nbsp;<input onclick="google_go()" type="button" value="谷歌搜索" class="btn_my_zzk">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 常用链接 -->
+<div id="sidebar_shortcut" class="sidebar-block">
+<h3 class="catListTitle">
+常用链接
+</h3>
+<ul>
+    
+<li><a href="https://www.cnblogs.com/l2017/p/" title="我的博客的随笔列表">我的随笔</a></li>
+<li><a href="https://www.cnblogs.com/l2017/MyComments.html" title="我的发表过的评论列表">我的评论</a></li>
+<li><a href="https://www.cnblogs.com/l2017/OtherPosts.html" title="我评论过的随笔列表">我的参与</a></li>
+<li><a href="https://www.cnblogs.com/l2017/RecentComments.html" title="我的博客的评论列表">最新评论</a></li>
+<li><a href="https://www.cnblogs.com/l2017/tag/" title="我的博客的标签列表">我的标签</a></li>
+
+</ul>
+</div>
+
+<!-- 最新随笔 -->
+
+
+<!-- 我的标签 -->
+<div id="sidebar_toptags" class="sidebar-block">
+<div class="catListTag">
+    <h3 class="catListTitle">我的标签</h3>
+    <ul>
+                <li>
+            <a href="https://www.cnblogs.com/l2017/tag/c%2B%2B/">c++<span class="tag-count">(74)</span></a>
+        </li>
+        <li>
+            <a href="https://www.cnblogs.com/l2017/tag/%E7%B1%BB/">类<span class="tag-count">(12)</span></a>
+        </li>
+        <li>
+            <a href="https://www.cnblogs.com/l2017/tag/opencv/">opencv<span class="tag-count">(9)</span></a>
+        </li>
+        <li>
+            <a href="https://www.cnblogs.com/l2017/tag/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/">图像处理<span class="tag-count">(9)</span></a>
+        </li>
+        <li>
+            <a href="https://www.cnblogs.com/l2017/tag/%E9%9D%A2%E8%AF%95/">面试<span class="tag-count">(8)</span></a>
+        </li>
+        <li>
+            <a href="https://www.cnblogs.com/l2017/tag/%E5%BE%AE%E6%9C%8D%E5%8A%A1/">微服务<span class="tag-count">(5)</span></a>
+        </li>
+        <li>
+            <a href="https://www.cnblogs.com/l2017/tag/%E4%BB%A3%E7%A0%81%E4%B9%8B%E7%BE%8E/">代码之美<span class="tag-count">(4)</span></a>
+        </li>
+        <li>
+            <a href="https://www.cnblogs.com/l2017/tag/%E7%AE%97%E6%B3%95%E5%AF%BC%E8%AE%BA/">算法导论<span class="tag-count">(4)</span></a>
+        </li>
+        <li>
+            <a href="https://www.cnblogs.com/l2017/tag/redis/">redis<span class="tag-count">(4)</span></a>
+        </li>
+        <li>
+            <a href="https://www.cnblogs.com/l2017/tag/%E5%A4%9A%E6%80%81/">多态<span class="tag-count">(4)</span></a>
+        </li>
+    <li>
+        <a href="https://www.cnblogs.com/l2017/tag/">更多</a>
+    </li>
+
+    </ul>
+</div>
+</div>
+
+<!-- 积分与排名 -->
+
+
+<!-- 随笔分类、随笔档案、文章分类、新闻分类、相册、链接 -->
+<div id="sidebar_categories">
+
+    <div class="catListPostArchive">
+        <h3 class="catListTitle">
+            
+随笔档案
+
+
+
+        </h3>
+        <ul>
+                <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/l2017/archive/2020/12.html" rel="" target="">
+    2020年12月(1)
+</a>
+
+                    
+
+                </li>
+                                            <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/l2017/archive/2020/10.html" rel="" target="">
+    2020年10月(3)
+</a>
+
+                    
+
+                </li>
+                                            <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/l2017/archive/2020/09.html" rel="" target="">
+    2020年9月(2)
+</a>
+
+                    
+
+                </li>
+                                            <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/l2017/archive/2020/06.html" rel="" target="">
+    2020年6月(3)
+</a>
+
+                    
+
+                </li>
+                                            <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/l2017/archive/2020/04.html" rel="" target="">
+    2020年4月(2)
+</a>
+
+                    
+
+                </li>
+                                            <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/l2017/archive/2020/03.html" rel="" target="">
+    2020年3月(2)
+</a>
+
+                    
+
+                </li>
+                                            <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/l2017/archive/2020/02.html" rel="" target="">
+    2020年2月(1)
+</a>
+
+                    
+
+                </li>
+                                            <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/l2017/archive/2020/01.html" rel="" target="">
+    2020年1月(1)
+</a>
+
+                    
+
+                </li>
+                                            <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/l2017/archive/2019/11.html" rel="" target="">
+    2019年11月(1)
+</a>
+
+                    
+
+                </li>
+                                            <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/l2017/archive/2019/10.html" rel="" target="">
+    2019年10月(2)
+</a>
+
+                    
+
+                </li>
+                                            <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/l2017/archive/2019/09.html" rel="" target="">
+    2019年9月(1)
+</a>
+
+                    
+
+                </li>
+                                            <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/l2017/archive/2019/08.html" rel="" target="">
+    2019年8月(6)
+</a>
+
+                    
+
+                </li>
+                                            <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/l2017/archive/2019/07.html" rel="" target="">
+    2019年7月(3)
+</a>
+
+                    
+
+                </li>
+                                            <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/l2017/archive/2019/05.html" rel="" target="">
+    2019年5月(4)
+</a>
+
+                    
+
+                </li>
+                                            <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/l2017/archive/2019/04.html" rel="" target="">
+    2019年4月(11)
+</a>
+
+                    
+
+                </li>
+                                            <li data-category-list-item-visible="false" style="display: none">
+                    
+<a href="https://www.cnblogs.com/l2017/archive/2019/03.html" rel="" target="">
+    2019年3月(7)
+</a>
+
+                    
+
+                </li>
+                                            <li data-category-list-item-visible="false" style="display: none">
+                    
+<a href="https://www.cnblogs.com/l2017/archive/2019/02.html" rel="" target="">
+    2019年2月(3)
+</a>
+
+                    
+
+                </li>
+                                            <li data-category-list-item-visible="false" style="display: none">
+                    
+<a href="https://www.cnblogs.com/l2017/archive/2019/01.html" rel="" target="">
+    2019年1月(6)
+</a>
+
+                    
+
+                </li>
+                                            <li data-category-list-item-visible="false" style="display: none">
+                    
+<a href="https://www.cnblogs.com/l2017/archive/2018/12.html" rel="" target="">
+    2018年12月(7)
+</a>
+
+                    
+
+                </li>
+                                            <li data-category-list-item-visible="false" style="display: none">
+                    
+<a href="https://www.cnblogs.com/l2017/archive/2018/11.html" rel="" target="">
+    2018年11月(2)
+</a>
+
+                    
+
+                </li>
+                                            <li data-category-list-item-visible="false" style="display: none">
+                    
+<a href="https://www.cnblogs.com/l2017/archive/2018/07.html" rel="" target="">
+    2018年7月(8)
+</a>
+
+                    
+
+                </li>
+                                            <li data-category-list-item-visible="false" style="display: none">
+                    
+<a href="https://www.cnblogs.com/l2017/archive/2018/03.html" rel="" target="">
+    2018年3月(1)
+</a>
+
+                    
+
+                </li>
+                                            <li data-category-list-item-visible="false" style="display: none">
+                    
+<a href="https://www.cnblogs.com/l2017/archive/2018/02.html" rel="" target="">
+    2018年2月(1)
+</a>
+
+                    
+
+                </li>
+                                            <li data-category-list-item-visible="false" style="display: none">
+                    
+<a href="https://www.cnblogs.com/l2017/archive/2018/01.html" rel="" target="">
+    2018年1月(11)
+</a>
+
+                    
+
+                </li>
+                                            <li data-category-list-item-visible="false" style="display: none">
+                    
+<a href="https://www.cnblogs.com/l2017/archive/2017/12.html" rel="" target="">
+    2017年12月(2)
+</a>
+
+                    
+
+                </li>
+                                            <li data-category-list-item-visible="false" style="display: none">
+                    
+<a href="https://www.cnblogs.com/l2017/archive/2017/11.html" rel="" target="">
+    2017年11月(17)
+</a>
+
+                    
+
+                </li>
+                                            <li data-category-list-item-visible="false" style="display: none">
+                    
+<a href="https://www.cnblogs.com/l2017/archive/2017/10.html" rel="" target="">
+    2017年10月(12)
+</a>
+
+                    
+
+                </li>
+                                            <li data-category-list-item-visible="false" style="display: none">
+                    
+<a href="https://www.cnblogs.com/l2017/archive/2017/09.html" rel="" target="">
+    2017年9月(3)
+</a>
+
+                    
+
+                </li>
+                                            <li data-category-list-item-visible="false" style="display: none">
+                    
+<a href="https://www.cnblogs.com/l2017/archive/2017/05.html" rel="" target="">
+    2017年5月(11)
+</a>
+
+                    
+
+                </li>
+                                        <li><a href="javascript:void(0)" onclick="sideColumnManager.loadMore(this)">更多</a></li>
+        </ul>
+    </div></div>
+
+<!-- 最新评论 -->
+<div id="sidebar_recentcomments" class="sidebar-block"><div id="recent_comments_wrap" class="RecentComment">
+    <h3 class="catListTitle">最新评论</h3>
+    <div class="RecentCommentBlock">
+        <ul>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/l2017/p/10830391.html">1. Re:epoll源码解析翻译------说使用了mmap的都是骗子</a></li>
+                    <li class="recent_comment_body"><p>大佬太牛了，比网上没根据的瞎说的好多了</p>
+</li>
+                    <li class="recent_comment_author">--朱禹宁</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/l2017/p/10261684.html">2. Re:内存管理思维导图------现代操作系统（第四版）</a></li>
+                    <li class="recent_comment_body"><p>可以求一下操作系统两个思维导图的原格式版本吗 谢谢 邮箱600114511@163.com</p>
+</li>
+                    <li class="recent_comment_author">--JACKPURCELL</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/l2017/p/10830391.html">3. Re:epoll源码解析翻译------说使用了mmap的都是骗子</a></li>
+                    <li class="recent_comment_body">@ 小胖西瓜嗯嗯...</li>
+                    <li class="recent_comment_author">--ff_d</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/l2017/p/10830391.html">4. Re:epoll源码解析翻译------说使用了mmap的都是骗子</a></li>
+                    <li class="recent_comment_body">抓重点呀</li>
+                    <li class="recent_comment_author">--小胖西瓜</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/l2017/p/8386583.html">5. Re:vs2015+opencv3.3.1+ maxflow-v3.01 c++实现Yuri Boykov 的Interactive Graph Cuts</a></li>
+                    <li class="recent_comment_body">谢谢楼主啦</li>
+                    <li class="recent_comment_author">--Zz阿咩啊</li>
+        </ul>
+    </div>
+</div></div>
+
+
+<!-- 阅读排行榜 -->
+<div id="sidebar_topviewedposts" class="sidebar-block">
+<div id="topview_posts_wrap">
+    <h3 class="catListTitle">阅读排行榜</h3>
+    <div id="TopViewPostsBlock">
+        <ul style="word-break:break-all">
+                    <li>
+                        <a href="https://www.cnblogs.com/l2017/p/9379673.html">
+                            1. constexpr函数------c++ primer(3729)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/l2017/p/6833340.html">
+                            2. c++基类指针指向继承类调用继承类函数(2258)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/l2017/p/10830391.html">
+                            3. epoll源码解析翻译------说使用了mmap的都是骗子(2253)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/l2017/p/9370975.html">
+                            4. 标准库函数begin和end------c++primer(1502)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/l2017/p/10585700.html">
+                            5. c++ inline使函数实现可以在头文件中，避免多重定义错误(1210)
+                        </a>
+                    </li>
+        </ul>
+    </div>
+</div></div>
+
+<!-- 评论排行榜 -->
+<div id="sidebar_topcommentedposts" class="sidebar-block"><div id="topfeedback_posts_wrap">
+    <h3 class="catListTitle">评论排行榜</h3>
+    <div id="TopFeedbackPostsBlock">
+        <ul style="word-break:break-all">
+                    <li>
+                        <a href="https://www.cnblogs.com/l2017/p/10830391.html">
+                            1. epoll源码解析翻译------说使用了mmap的都是骗子(3)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/l2017/p/8386583.html">
+                            2. vs2015+opencv3.3.1+ maxflow-v3.01 c++实现Yuri Boykov 的Interactive Graph Cuts(3)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/l2017/p/10261684.html">
+                            3. 内存管理思维导图------现代操作系统（第四版）(1)
+                        </a>
+                    </li>
+        </ul>
+    </div>
+</div></div>
+
+<!-- 推荐排行榜 -->
+<div id="sidebar_topdiggedposts" class="sidebar-block">
+<div id="topdigg_posts_wrap">
+    <div class="catListView">
+        <h3 class="catListTitle">推荐排行榜</h3>
+        <div id="TopDiggPostsBlock">
+            <ul style="word-break: break-all">
+                        <li>
+                            <a href="https://www.cnblogs.com/l2017/p/10830391.html">
+                                1. epoll源码解析翻译------说使用了mmap的都是骗子(1)
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.cnblogs.com/l2017/p/9379673.html">
+                                2. constexpr函数------c++ primer(1)
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.cnblogs.com/l2017/p/8660089.html">
+                                3. c++实现多叉树树形显示（适合家谱的显示）(1)
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.cnblogs.com/l2017/p/8319328.html">
+                                4. 内存布局------c++程序设计基础、编程抽象与算法策略(1)
+                            </a>
+                        </li>
+            </ul>
+        </div>
+    </div>
+</div></div></div>
+                    <script>loadBlogSideColumn();</script>
+                    <!-- end:  SingleColumn -->
+                </div>
+            </div>
+        </div>
+        <div class="clear"></div>
+    </div>
+    <div class="clear"></div>
+    <div id="footer">
+        <!--done-->
+Copyright © 2021 ff_d
+<br><span id="poweredby">Powered by .NET 5.0 on Kubernetes</span>
+
+    </div>
+</div>
+
+    
+
+    <input type="hidden" id="antiforgery_token" value="CfDJ8EklyHYHyB5Oj4onWtxTnxYuiEDfOxWVgadnk9YW4mwHdiPlqwpqxiLtXjVUuUFN_gwvbcj4TwlD7Do3AIiD35atsjFjBEnV_AMmzZZ4Y5vVhOyOTqaHu8Mzb5CTgFygU_rs6wC0bKO4eqGpNMuqfCo">
+
+
+</body></html>

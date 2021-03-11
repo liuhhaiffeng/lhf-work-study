@@ -1,0 +1,39 @@
+[uxdb@localhost bin]$ ./uxsql
+uxsql (10.0)
+Type "help" for help.
+
+uxdb=# alter system set fsync = 'off';
+ALTER SYSTEM
+uxdb=# alter system set synchronous_commit = 'off';
+ALTER SYSTEM
+uxdb=# select rac_reload_conf();
+ rac_reload_conf 
+-----------------
+ (1,success)
+ (2,success)
+ (3,success)
+(3 rows)
+
+
+uxdb=# \q
+[uxdb@localhost bin]$ pwd
+/home/uxdb/uxdbinstall/dbsql/bin
+[uxdb@localhost bin]$ ./uxbench -c 8 -T 1200 -P 5 uxbench5000 -n -p 5432
+progress: 5.0 s, 831.8 tps, lat 9.501 ms stddev 2.014
+progress: 10.0 s, 832.6 tps, lat 9.612 ms stddev 1.473
+progress: 15.0 s, 863.2 tps, lat 9.264 ms stddev 1.398
+progress: 20.0 s, 850.0 tps, lat 9.415 ms stddev 1.411
+progress: 25.0 s, 858.6 tps, lat 9.318 ms stddev 1.434
+progress: 30.0 s, 856.6 tps, lat 9.339 ms stddev 1.401
+progress: 35.0 s, 859.2 tps, lat 9.312 ms stddev 1.382
+progress: 40.0 s, 844.2 tps, lat 9.475 ms stddev 1.574
+progress: 45.0 s, 822.2 tps, lat 9.727 ms stddev 1.444
+progress: 50.0 s, 839.0 tps, lat 9.535 ms stddev 1.390
+progress: 55.0 s, 853.6 tps, lat 9.377 ms stddev 1.390
+progress: 60.0 s, 847.2 tps, lat 9.438 ms stddev 1.553
+progress: 65.0 s, 863.0 tps, lat 9.271 ms stddev 1.432
+progress: 70.0 s, 878.0 tps, lat 9.117 ms stddev 1.345
+progress: 75.0 s, 871.8 tps, lat 9.175 ms stddev 1.383
+progress: 80.0 s, 876.8 tps, lat 9.121 ms stddev 1.347
+progress: 85.0 s, 879.4 tps, lat 9.101 ms stddev 1.371
+progress: 90.0 s, 874.0 tps, lat 9.151 ms stddev
