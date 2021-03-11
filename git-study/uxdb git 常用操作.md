@@ -558,3 +558,9 @@ git remote -v
 git fetch --all
 git reset --hard origin/master
 ```
+
+
+
+## git 删除远程分支
+
+git push origin --delete 分支名
