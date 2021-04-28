@@ -564,3 +564,31 @@ git reset --hard origin/master
 ## git 删除远程分支
 
 git push origin --delete 分支名
+
+
+
+## 查找2个分支的最新共同点
+
+$ git merge-base branch1 branch2
+1dcd96f59ac9199622ccab4163952225063cd0c2
+
+## git rebase
+
+用法二：将某一段commit合入到另外一个分支上
+命令格式：
+git rebase [startpoint] [endpoint] --onto [branchName]
+[startpoint] [endpoint] 指定了一个编辑区间(前开后闭)
+使用方法：
+当前分支为develop分支，将develop分支的90bc0045b~5de0da9f2的commit合入到master分支。
+git rebase 90bc0045b^ 5de0da9f2 --onto master
+如果提示：
+Cannot rebase: You have unstaged changes.
+Please commit or stash them.
+则执行 git checkout .
+提示冲突，则vi修改冲突，git add冲突文件路径，git rebase --continue。
+
+git checkout master // 从develop分支切换到master分支
+git reset --hard 0c72364 // 将master所指向的提交id设置为当前HEAD所指向的提交id，0c72364为执行git rebase后，master分支最后一次commit的SHA-1值(git checkout master执行后显示最上面一行的hash码)。
+git push -f 把git rebase修改 提交到远端master分支（春妙 说要指定分支）。
+————————————————
+版权声明：本文为CSDN博主「djgclzdyc」的原创文章，遵循CC 4.0 BY-SA版权协议，转载请附上原文出处链接及本声明。

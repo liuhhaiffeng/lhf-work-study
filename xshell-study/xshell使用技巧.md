@@ -81,3 +81,11 @@ Alt+C
 ## 恢复当前ssh
 
 Shift+Alt+R
+
+## 反向搜索命令历史
+
+在Xshell中按下 Ctrl+r 就会出现下面的反向搜索框
+
+（reverse-i-search)`': 
+
+可以里面输入历史命令的关键字，输入越多搜索越精确。

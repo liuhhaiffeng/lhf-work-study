@@ -1,0 +1,489 @@
+"说明: 此.vimrc为刘海峰自定义创建的文件
+
+" 全局基本设置
+set nu    "显示行号, 或 set number
+"set relativenumber " 显示相对行号
+set noswapfile
+set linebreak   "vim分屏时, 长的行会自动折叠, 但完整的单词会被切断, 使用此设置后可解决此问题
+let mapleader=","   " 自定义逗号(,)为<leader>
+set mouse=   " 默认不开启鼠标模式, set mouse-=a 或 set mouse=(空) 关闭鼠标模式
+map <F11> :set mouse=<CR>
+map <F12> :set mouse=a<CR>
+
+" 设置tab缩进
+set smarttab    " 智能tab缩进
+set expandtab   " 设置将tab替换为空格
+set shiftwidth=4 " 设置将tab转换为多少个空格
+set tabstop=4 " tabstop是实际读到\t时(Tab字元)时, 要解释为几个空格
+set softtabstop=4   " softtabstop是在动作(Backspace)或是(Tab)时, 对空白的解释, 
+" 注: 有了上面的设置, smartindent autoindent其实就不需了
+
+set cursorline " 下划线突出显示当前行
+
+"下面2行让vim永久显示文件名
+"set statusline=%F%m%r%h%w%=\ [pos=%04l,%04v][%p%%]\ [len=%L]
+set statusline=%F%m%r%h%w%=\ [当前行=%04l,%04v][占比=%p%%]\ [总行数=%L]
+set laststatus=2    " 必须是2
+
+"vim中光标定位到一个函数内部时talist侧栏(或tagbar侧栏)会显示当前所属的函数，
+"不过默认刷新时间比较长，不太方便
+"set updatetime=2000 " 我设置的是 2000 毫秒，即 2 秒 这样，
+"Taglist(或tagbar) 的刷新速度就接近 2 秒了
+"注: set updatetime 是一个全局的设置
+set updatetime=1000 " 设置1s, 时间太短(ex:200ms),会导致在tagbar中浏览卡顿
+
+
+" 自定义函数
+" +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+"在 vim的状态栏显示 当前行所在的函数名字, 按一下 f 键就能显示函数名字
+fun! ShowFuncName()
+    let lnum = line(".")
+    let col = col(".")
+    echohl ModeMsg
+    echo getline(search("^[^ \t#/]\\{2}.*[^:]\s*$", 'bW'))
+    echohl None
+    call search("\\%" . lnum . "l" . "\\%" . col . "c")
+endfun
+
+" vim中删除除当前buffer外所有的buffer
+fun! DeleteAllBuffersInWindow()
+    let s:curWinNr   =  winnr()
+     if  winbufnr ( s:curWinNr )   ==   1
+        ret
+    endif
+    let s:curBufNr   =  bufnr( " % " )
+    exe  " bn "
+    let s:nextBufNr   =  bufnr( " % " )
+    while s:nextBufNr  !=  s:curBufNr
+        exe  " bn "
+        exe  " bdel  " . s:nextBufNr
+        let s:nextBufNr   =  bufnr( " % " )
+    endwhile
+endfun
+map <silent> <leader>bda      :call  DeleteAllBuffersInWindow ()
+
+fun! Mksession(name)
+    let need_tree = g:NERDTree.IsOpen()
+    NERDTreeClose
+    execute "mksession! " . a:name
+    if need_tree
+        call writefile(readfile(a:name)+['NERDTree'], a:name)
+        NERDTree
+    endif
+endfun
+
+command! -nargs=1 Mksession call Mksession(<f-args>)
+" -----------------------------------------------------------------
+
+" 公共tags
+set tags+=/usr/include/tags,/usr/local/include/tags
+
+" 设置后,  GTags 也能利用此公共tags搜索系统API
+set cscopetag " 使用cscope作为tags命令
+set cscopeprg='gtags-cscope'  " 使用gtags-cscope代替cscope
+
+"nnoremap <c-]> :Gtags<cr><cr>   " <c-]>默认使用的是ctags, 有的函数没有ctags, 无法跳转, 所以这里强制使用Gtags
+
+" 快捷键映射
+" ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+" 将ctrl-e映射为ctrl-j, 将ctlr-y映射为ctrl-k, 以方便使用
+":map <C-j> <C-e>
+":map <C-k> <C-y>
+
+nnoremap j jzz
+nnoremap k kzz
+inoremap jj <esc><esc>
+
+
+" 下面单个<esc>会有问题, 即 vi 打开文件后, 直接进入到了insert模式, " 所以还是用上面<esc><esc>吧
+"map <esc> :nohl<CR>
+:map <esc><esc> :nohl<CR>
+
+"这里f 和vim f 查找冲突了, 修改为 ,f
+"map f :call ShowFuncName() <CR>
+map <silent> <leader>fs :call ShowFuncName() <CR>    " fs: function show
+" ------------------------------------------------------------------
+
+" 为自定义文件类型添加语法高亮
+" ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+" vim 为新添加的文件后缀支持语法高亮
+" 某个工程下的C代码都是以.pgc为后缀名命名的，
+" 如果直接用默认配置的vim打开该文件，则vim不
+" 认为这个文件时c文件，因此不会启动语法高亮。
+" 解决办法如下:
+au BufNewFile,BufRead *.pgc set filetype=c
+au BufNewFile,BufRead *.smi set filetype=sql
+au BufNewFile,BufRead *.std set filetype=sql
+au BufNewFile,BufRead *.nc set filetype=sql
+au BufNewFile,BufRead *.out set filetype=sql
+" ------------------------------------------------------------------
+
+
+
+" TagList插件
+" ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+let Tlist_Auto_Open=0 " 是否默认打开Taglist 0:不打开 1:打开
+let Tlist_Show_One_File=1   " 只显示当前文件的Tags列表
+let Tlist_Exit_OnlyWindow=1 " 随同主编辑窗口一同退出
+let Tlist_Use_Right_Window=1 " 设置在左侧还是右侧显示TagList窗口
+"let Tlist_Use_Horiz_Window=1  " 设置TagList横向显示
+"let list_WinWidth=30       " 设置TagList窗口固定宽度,不设置的话自动确定
+                            " 注: 在TagList窗口中, 直接按下 x ,可以最大或最小查看TagList窗口了
+                            
+
+" 可以用“:TlistOpen”打开taglist窗口，用“:TlistClose”关闭taglist窗口。或者使用“:TlistToggle”在打开和关闭间切换。
+" 可以自定义快捷键，在我的vimrc中定义了下面的映射，使用“,tl”键就可以打开/关闭taglist窗口：
+map <silent><leader>tl :TlistToggle<cr> 
+
+" vim中taglist使用(比较详细的):  
+"   https://www.cnblogs.com/mo-beifeng/archive/2011/11/22/2259356.html
+" -------------------------------------------------------------------
+
+" Gtags插件
+" https://www.cnblogs.com/cascle/p/5147624.html
+" +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+" global, gtags, Gtags 介绍
+"
+" https://www.mankier.com/1/gtags
+" If ´gtags.files´ exists in the current directory or a file is specified by
+" the -f option, target files are limited by it. Lines starting with ´. ´ are
+" comments.
+"
+" global: 参见 man global
+" gtags:
+"        gtags [-v]   全量更新
+"        gtags -i[v]   增量更新
+"
+"        global -u[v] 增量更新  与 gtags -i[v] 功能等价, 其实 global -u[v] 内部就是调用 gtags -i[v]的
+" vim中:
+"    F2 : ccopen, F4: cclose
+"    Gtags func: 查找函数定义
+"    Gtags -i func: 不敏感大小写查找函数定义  ex: Gtags -i start.*xlog 支持正则查找
+"    Gtags -r func: 查找函数的引用
+"    Gtags -g pattern: 查找字符串, 注意不要添加双引号,会自动添加的
+"    Gtags -gie patter: 查找字符串, 大小写敏感  https://www.cnblogs.com/kuang17/p/9449258.html
+"    Gtags -s 查找未在gtags文件中的符号, 感觉比Gtags -g 能准确快速一些
+"    Gtags -P 查找文件
+"
+"    :cl 查看quicklist结果  :cn 下一个  :cp 上一个  :ccn 跳转到指定的行
+"
+"    注:1. -Ei  选项可以不区分大小写以及 .* 之类的模糊搜索
+"       2. Gtags带有(单行的)自动提示时, 可以使用 CTRL-D, 进行窗口式的预览
+"
+set cscopetag  " 使用 cscope作为 tags 命令
+set cscopeprg='gtags-cscope' " 使用 gtags-cscope 代替 cscope
+
+"gtags.vim 设置项
+let GtagsCscope_Auto_Map = 1
+let GtagsCscope_Quiet = 1
+let GtagsCscope_Ignore_Case=1
+let Gtags_Close_When_Single=1   " 当查询结果只有一个时, 就不需要弹出quicklist窗口了
+
+"You can change it by replacing the :copen command in your mapping with :botright copen
+"https://github.com/preservim/tagbar/issues/195
+"let GtagsCscope_Auto_Load = 1
+let GtagsCscope_Auto_Load = 0   " 禁止默认的F2 :copen F4 :cclose 注： F2 :copen 和tagbar不兼容，会创建到tagbar的下面
+"map <F2> :botright copen 6<cr>  " 默认quickfix的高度为10行，这里修改为6行
+map <F2> :botright copen<cr>  " 默认quickfix的高度为10行，这里修改为10行
+map <F4> :cclose<cr> <c-w><c-l>  " 关闭quickfix后，默认焦点在Tagbar上，移到编辑界面
+
+map <F6> :cp<cr> :call ShowFuncName()<cr>   " Gtags cn的快捷键,并且查询时显示光标所在的函数
+map <F7> :cn<cr> :call ShowFuncName()<cr>
+
+map <silent><leader>cn :cn<cr>
+map <silent><leader>cp :cp<cr>
+map <silent><leader>cl :cl<cr>
+map <silent><leader>cc :cc
+
+map <F8> :Gtags 
+map <silent><leader>gp :Gtags -P
+map <silent><leader>gr :Gtags -r
+map <silent><leader>gg :Gtags -g
+map <silent><leader>gs :Gtags -s
+map <silent><leader>gf :Gtags -f
+map <silent><leader>gt :Gtags
+
+" -----------------------------------------------------------------
+
+" 使用帮助
+" ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+" ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+" ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+" vim中复制粘贴缩进错乱问题解决
+" ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+" 在vim中当使用ctrl+c,ctrl+v到vim时候, 会出现代码丢失和缩进错乱等情况
+" 解决方案设置 set paste就OK了, vim默认是set nopaste (即: 解除了paste模式)
+" paste模式主要帮我们做了如下事情：
+" textwidth设置为0
+" wrapmargin设置为0
+" set noai
+" set nosi
+" softtabstop设置为0
+" revins重置
+" ruler重置
+" showmatch重置
+" formatoptions使用空值
+" 注: set paste 和 set autoindent冲突, 开启set paste会使得set autoindent失效
+" 上述问题解决: 不要永久性的打开set paster, 仅在vim中粘贴时,临时开启一下 
+
+"set paste
+
+" 总之如下:
+"vim要粘贴的话，先set paste，然后粘贴，然后再set nopaste
+" ------------------------------------------------------------------
+
+" 其他使用tips
+" q:      " 在normal模式下, 键入 q: 可以查看 :命令的历史
+" q/      " 在normal模式下, 键入 q/ 可以查看搜索命令的历史
+          "在弹出的历史命令窗口中, 选择要复用的命令后, 按下CTRL-C键, 即可将其复制到 :xx 或 /xx 中
+
+" :e 打开文件, 使用 CTRL-D在quicklist大窗口中进行文件的预览,
+          " 并且预览时可以过滤文件, 如: e *.c  然后CTRL-D, 则只显示所有扩展名为.c的文件
+
+" vim 复制粘贴到命令行
+" CTRL-R 0          " 即 先按下CTRL-R, 再按下数字0, 则可以将vim yy yaw yw 等的内容粘贴到vim命令行中了
+
+" 搜索
+" CTRL-] 跳转到函数的定义处
+" gd  跳转到局部变量的定义处
+
+" cd %:h  " 跳转到当前文件所在的目录
+"
+
+" Vim 安装、基本配置、使用、插件(bundle、nerdTree、tagbar、ctrlp、
+"   vim-airline、molokai、vim-fugitive、ctags) 教程说明
+"   https://blog.csdn.net/weixin_38815998/article/details/103589090
+
+" vim中taglist使用(比较详细的):  https://www.cnblogs.com/mo-beifeng/archive/2011/11/22/2259356.html
+
+" vim 语法高亮插件 TagHighLight
+" https://blog.csdn.net/qq374576114/article/details/79146292
+" :UpdateTypesFile
+
+" -----------------------------------------------------------------
+" -----------------------------------------------------------------
+" -----------------------------------------------------------------
+
+" Vundle 插件管理器真香
+" https://blog.csdn.net/weixin_38815998/article/details/103589090
+" 1. 下载源码
+" 终端输入该命令，意思是从github中下载源码到 " ~/.vim/bundle/Vundle.vim
+" git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+"
+" 执行 :PluginInstall  安装插件
+" 执行 :PluginClean  卸载插件
+" ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+" 2. 配置"配置文件"
+set nocompatible              " be iMproved, required
+filetype off                  " required
+ 
+call plug#begin('~/.vim/plugged')
+Plug 'scrooloose/nerdtree'
+Plug 'jistr/vim-nerdtree-tabs'
+Plug 'vim-scripts/taghighlight'
+Plug 'zivyangll/git-blame.vim'
+Plug 'jiangmiao/auto-pairs'
+Plug 'tpope/vim-commentary'
+Plug 'vim-scripts/DoxygenToolkit.vim'
+Plug 'majutsushi/tagbar'  
+
+"Plug 'luochen1990/rainbow'
+"Plug 'nathanaelkane/vim-indent-guides'
+"Plug 'Yggdroot/indentLine'
+Plug 'Yggdroot/LeaderF', { 'do': ':LeaderfInstallCExtension'  }
+"Plug 'Valloric/YouCompleteMe'
+
+Plug 'luochen1990/rainbow'
+let g:rainbow_active = 1 "set to 0 if you want to enable it later via :RainbowToggle"
+call plug#end()
+
+" nerdtree插件
+" ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+"autocmd vimenter * NERDTree     " 打开vim, 自动开启nerd tree
+"autocmd VimEnter * NERDTree | wincmd p  " 打开Nerdtree时,焦点跳回之前的
+
+map <silent><leader>ne :NERDTreeToggle<cr>  
+map <silent><leader>nf :NERDTreeFind<cr>    " 目录定位到当前文件 
+let NERDTreeWinSize=25
+" 多个过滤 let NERDTreeIgnore = ['\.o$', '\.txt$', '\.obj$']
+let NERDTreeIgnore = ['\.o$']
+
+" https://blog.csdn.net/weixin_30420305/article/details/95339932
+let NERDTreeWinPos="right"
+
+let NERDTreeShowLineNumbers=1
+let NERDTreeAutoCenter=1
+
+" 在NERDTree 中显示git信息
+" 开发的过程中，我们希望git信息直接在NERDTree中显示出来，和Eclipse一样，
+" 修改的文件和增加的文件都给出相应的标注，这时需要安装的插件就是nerdtree-git-plugin
+" 配置信息如下
+" 作者：xinxingzhao
+" 链接：https://www.jianshu.com/p/3066b3191cb1
+" 来源：简书
+" 著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+"let g:NERDTreeIndicatorMapCustom = {    " 这个作者已经废弃
+"let g:NERDTreeGitStatusIndicatorMapCustom = {
+"                \ 'Modified'  :'✹',
+"                \ 'Staged'    :'✚',
+"                \ 'Untracked' :'✭',
+"                \ 'Renamed'   :'➜',
+"                \ 'Unmerged'  :'═',
+"                \ 'Deleted'   :'✖',
+"                \ 'Dirty'     :'✗',
+"                \ 'Ignored'   :'☒',
+"                \ 'Clean'     :'✔︎',
+"                \ 'Unknown'   :'?',
+"                \ }
+
+" im关闭最后一个文件编辑buffer窗口时自动退出其余所有NERDTree、Quickfix窗口
+" https://www.cnblogs.com/awakenedy/articles/11865605.html
+"autocmd BufEnter * if 0 == len(filter(range(1, winnr('$')), 'empty(getbufvar(winbufnr(v:val), "&bt"))')) | qa! | endif  "禁止此设置，其会导致 bd bp bn时，vim直接退出
+" -----------------------------------------------------------------
+
+" tagbar 注: 感觉tagbar 比 Taglist的显示方式更好
+map <silent><leader>tb :TagbarToggle<CR>   "通过 ,tb 打开/关闭Tagbar
+let g:tagbar_width=30
+ let g:tagbar_left = 1   "让tagbar在页面左侧显示，默认右边"
+
+map <silent><leader>nt :NERDTreeToggle<cr> :TagbarToggle<cr> <c-w><c-w>
+
+" 实践证明只能使用第2行的配置，第一行的配置逻辑上合理，但实际使用
+" 反复按下F5时，NERDTreeToggle和TagbarToggle无法同时开启和关闭
+" 而第2行没有问题
+"map <F5> :NERDTreeToggle<cr> <c-w><c-w> :TagbarToggle<cr>
+"map <F5> :NERDTreeToggle<cr>  :TagbarToggle<cr> <c-w><c-w>   " for NERDTree在左侧， Tagbar在右侧的情况
+map <F5> :TagbarToggle<cr> :NERDTreeToggle<cr> <c-w><c-h>       " for NERDTree在右侧， Tagbar在左侧的情况
+
+" git-blame.vim 
+" https://github.com/zivyangll/git-blame.vim
+nnoremap <silent><leader>bl :<C-u>call gitblame#echo()<CR> " bl: blame
+
+
+" 在第80个字符的位置画一条垂直线（从1开始）
+" set cc=0 取消垂直线
+"set cc=80   " set colorcolumn
+"highlight ColorColumn ctermbg=0 guibg=#000000
+
+" airline插件的主题配置
+"let g:airline_theme="bubblegum"
+
+" ctrlp.vm插件
+"let g:airline_cmd = 'CtrlP'        " ctrl + p 按键启动
+
+" molokai
+"colorscheme molokai    " 开启 molokai 配色主题
+
+
+
+" 最常用的命令
+" 1. q:  q/    注: 其打开的窗口使用 :q 来退出, Ctrl-c将当前命令复制到"命令行窗口"
+" 2. Tagbar  x
+" 3. e %:h 打开的窗口, 按 q 退出
+" 4. shift-( shift-) 滚动
+" 5. shift-{ shift-} 滚动
+" 6. 苦练一年后总结的 Vim 使用技巧，送你，拿好了！ https://zhuanlan.zhihu.com/p/294938381
+
+" mks!
+" so[urce] Session.vim
+
+" ctags `find -name "*.[hc]"`
+
+" 提高 TagHighlight :UpdateTypesFile 速度
+" .vim/bundle/taghighlight/plugin/TagHighlight/data
+" use_existing_tagfile:
+" Default:False 修改为 True
+
+" 在Vim中显示不同的背景颜色超过80个字符
+" https://www.orcode.com/question/562317_kff704.html
+"hi Normal guibg=#32322f ctermbg=236
+"hi NonText guibg=#32322f ctermbg=236
+"hi ColorColumn guibg=#000000 ctermbg=0
+"let &colorcolumn=join(range(1,80),",")
+
+
+" 'tpope/vim-commentary' 注释说明
+" gcc 添加注释  gcu 取消注释
+" 选择代码后， gc 添加注释， 反正 gu取消注释
+
+" 寄存器粘贴和复制
+" 说明：vim默认的yy复制后，如果再进行dd，会将之前yy复制的内容覆盖掉，可以
+" 将复制的内容添加到指定的寄存器中，用法： [双引号][寄存器]yy  [双引号][寄存器]p
+" "ayy          
+" "ap
+
+" vim DoxygenToolKit 插件使用说明
+" 函数注释  将光标放在 function 或者 class 的名字所在的一行，然后输入命令 :Dox
+" https://blog.csdn.net/liwf616/article/details/51338198
+
+" LeaderF下载网址： https://github.com/Yggdroot/LeaderF
+" vim插件之LeaderF常用用法 https://blog.csdn.net/qq_37953134/article/details/83042962
+ 
+" Plugin 'Valloric/YouCompleteMe' 使用说明
+" https://blog.csdn.net/scnu20142005027/article/details/51730715
+" https://github.com/aggronmagi/YouCompleteMe
+
+"cenots7下vim7.4升级到vim8.2
+" https://www.cnblogs.com/wscsq789/p/12222634.html
+" 1. 注意事项：安装上述网站使用 wget下载vim8.2.0138.zip时
+"  我采用如下命令进入root， su  
+"  在wget下载完成后会提示"Cannot write disk(success)",
+"  这时使用unzip解压下载的vim8.2.0138.zip时，提示文件损坏
+"  解决：在bing.com上有个解答，说要以  sudo su 的方式进入root
+"  亲自测试下载并解压成功，具体原因未知，也是仅仅只是(第二次)巧合下载成功而已
+"
+" 2. 从vim7.4升级到8.2的必要性
+"  'Yggdroot/LeaderF' 在vim7.4下有bug
+" 例如： vim7.4下，使用 :LeaderfFunction搜索函数，函数可以搜索成功，但在按下
+"        回车时，报如下错误 .
+"        并且，vim7.4下(Bundle和vim-Plug)安装的LeaderF均报如下错误
+"        分别通过Bundle和vim-Plug的方式安装了LeaderF,均报如下错误，
+"        网上查找资料:有的插件对vim7.4已经不友好，建议升级到vim8解决，
+"        于是将vim升级到8.2后，此问题解决。
+"        结论：不是LeaderF或本地Python的问题，而是插件对vim7.4不兼容，
+"              升级到vim8即可解决。
+" +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+"LeaderF ► Function ► Fuzzy ► /home/uxdb/uxdb-ng-rac/uxdb-2.0/src ►                                                                                                                     ◄ 1/2 ◄ Total: 199 
+"Error detected while processing function leaderf#Any#start..leaderf#LfPy:
+"line    1:
+"Traceback (most recent call last):
+"  File "<string>", line 1, in <module>
+"  File "/home/uxdb/.vim/plugged/LeaderF/autoload/leaderf/python/leaderf/anyExpl.py", line 815, in start
+"    the_args.start(arguments, *args, **kwargs)
+"  File "/home/uxdb/.vim/plugged/LeaderF/autoload/leaderf/python/leaderf/anyExpl.py", line 747, in _default_action
+"    manager.startExplorer(win_pos[2:], *args, **kwargs)
+"  File "/home/uxdb/.vim/plugged/LeaderF/autoload/leaderf/python/leaderf/manager.py", line 2238, in startExplorer
+"    self.input()
+"  File "/home/uxdb/.vim/plugged/LeaderF/autoload/leaderf/python/leaderf/manager.py", line 62, in deco
+"    func(self, *args, **kwargs)
+"  File "/home/uxdb/.vim/plugged/LeaderF/autoload/leaderf/python/leaderf/manager.py", line 2575, in input
+"    if self.accept() is None:
+"  File "/home/uxdb/.vim/plugged/LeaderF/autoload/leaderf/python/leaderf/manager.py", line 1901, in accept
+"    win_local_cwd = lfEval("getcwd(winnr())")
+"vim.error: Vim:E118: Too many arguments for function: getcwd
+"Error detected while processing function leaderf#Any#start:
+"line    4:
+"E171: Missing :endif
+"-----------------------------------------------------------------------
+"
+" 3. 从vim7.4升级到vim8后，默认的 vi 关联的还是 vi7.4
+"    需要在当前用户的 ~/.bashrc后面增加
+"    alias vi='vim'
+"    保存后执行 source ~/.bashrc 后生效
+"
+"    并且，echo $EDITOR 查看默认编辑器是否为 vim
+"    如果不是或为空，和上面一样，在 .bashrc 中增加
+"    EDITOR=/usr/bin/vim    # gdb edit时, 使用vim, 而非vi
+"    export EDITOR
+"    保存后执行 source ~/.bashrc 后生效
+"
+" 4. vimdiff设置
+"    安装上述 yum remove vim, 对应的vimdiff也不卸载掉
+"    因为我将vim8安装到了 /usr/local/vim8/bin/, 而非 /usr/bin/
+"    因此vimdiff也要配置一下，否则会提示找不vimdiff
+"    其实，vimdiff是vim的一个软连接，如下设置即可:
+"    sudo ln -s /usr/local/vim8/bin/vimdiff /usr/bin/vimdiff
+
+
+

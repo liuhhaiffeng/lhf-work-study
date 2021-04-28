@@ -254,8 +254,183 @@ lhf注:灵活应用上面3个命令, 可以实现像vscode哪些任意分割窗�
 
 执行 :bd 即可, 详细查看帮助  :h bd
 
+如果不保存退出某 buf 的话，应该是 :bd! 代表把当前 buffer 强制删除
+
 
 
 ## vim+Doxygen实现注释自动生成
 
  https://blog.csdn.net/bodybo/article/details/78685640
+
+
+
+## [vim宏录制的操作](https://www.cnblogs.com/zoutingrong/p/12323978.html)
+
+1：在vim编辑器normal模式下输入qa（其中a为vim的寄存器）
+
+2：此时在按i进入插入模式，vim编辑器下方则会出现正在录制字样，此时便可以开始操作。
+
+3：需要录制的操作完成后，在normal模式下按q则会退出录制，则此时一个宏录制的完整操作则完成
+
+4：在normal模式下按@a则会重复宏录制中的操作
+
+
+
+## vim中git blame和git show
+
+在vim中如何查看blame历史，以及配合git show查看blame详情。
+
+例如，如果想要查看当前文本的blame历史，如下操作：
+
+```c
+eea587cbaea (Haifeng Liu 2021-04-02 08:16:24 +0000 1117) static void NotifyAgainMarkDirtyAndFlushBuffer(PiSendEntry *entry)
+eea587cbaea (Haifeng Liu 2021-04-02 08:16:24 +0000 1118) {
+eea587cbaea (Haifeng Liu 2021-04-02 08:16:24 +0000 1119)        PIMessage piSendMsg;
+eea587cbaea (Haifeng Liu 2021-04-02 08:16:24 +0000 1120)        PIMessage replyMsg;
+eea587cbaea (Haifeng Liu 2021-04-02 08:16:24 +0000 1121)        int ret = 0;
+eea587cbaea (Haifeng Liu 2021-04-02 08:16:24 +0000 1122)        unsigned int timeoutCounter = 0, recievedMsgCounter = 0;
+eea587cbaea (Haifeng Liu 2021-04-02 08:16:24 +0000 1123)        bool recivedCorrectSuccessReply = false;
+
+```
+
+比如，我想查看当前文本 1117行以后的blame历史
+
+1. !git blame -L 1117  %
+
+   在vim中输入上述命令，就可以看到代码的blame历史， -L <start>, <end>  使用 -L 可以指定要显式的blame的代码行数范围，
+
+   !git blame %  则查看当前文本全部blame历史，这时可以像vim中一样，输入行号，然后 gg 跳转到目标行也可以。
+
+   %  在vim指的是当前文件的路径名称。
+
+2. 通过上面的git blame只能看出是谁修改的，到底修改了什么不知道，这时可以再使用  git show commitid 来查看具体的修改内容。
+
+## vim中使用Gtags -g 进行文本搜索时，匹配整个单词
+
+Gtags -gM  pattern   
+
+-M  表示匹配整个单词。
+
+
+
+## vim代码折叠
+
+zf 创建折叠
+
+1   zc   折叠
+2   zC   对所在范围内所有嵌套的折叠点进行折叠
+3   zo   展开折叠
+4   zO   对所在范围内所有嵌套的折叠点展开
+5   [z    到当前打开的折叠的开始处。
+6   ]z    到当前打开的折叠的末尾处。
+7   zj    向下移动。到达下一个折叠的开始处。关闭的折叠也被计入。
+8   zk   向上移动到前一折叠的结束处。关闭的折叠也被计入。
+
+
+
+## vimdiff 使用
+
+dp   将当前复制到对方
+
+do  将对方复制到当前
+
+## vimgrep 和copen使用
+
+对于不确定位置的搜索和跳转，推荐使用 vimgrep 配合 copen ，这样的好处是：
+
+
+
+1. 得到一个结果项清单，你可以通过这个清单直接进行跳转，也能直接利用清单中打印出来的行号
+2. 通过目视一次性看到多个结果项，你不需要在正文中频繁跳转来查看那些项
+
+
+
+用 vimgrep 对当前 buffer 进行查找：
+
+
+
+```vim
+:vimgrep /第\d\+话/ %
+```
+
+打开 quickfix 窗口：
+
+
+
+```vim
+:copen
+```
+
+然后你就能快速查看所有的结果项和进行跳转。
+
+
+
+详细了解：
+
+```text
+:h vimgrep
+:h copen
+```
+
+注： vimgrep的简写为vim， 在命令窗口，输入 :vim pattern  % 即可。
+
+作者：zecy
+链接：https://www.zhihu.com/question/30782510/answer/49737544
+来源：知乎
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
+
+
+
+## quickfix-list 相关缩写
+
+```
+:cnext, :cn         # 当前页下一个结果
+:cprevious, :cp     # 当前页上一个结果
+:clist, :cl         # 使用 more 打开 Quickfix 窗口
+:copen, :cope, :cw  # 打开 Quickfix 窗口，列出所有结果
+:ccl[ose]           # 关闭 Quickfix 窗口。
+```
+
+参考：http://wxnacy.com/2017/10/13/vim-grep/
+
+## 使用vimgrep 查询当前或指定目录
+
+Gtags -g 只能进行全局的查看，如果仅仅查询当前文件或当前目录的话，可以使用vimgrep来解决。
+
+:vim pattern %|copen
+
+:vim pattern %:h/*|copen
+
+如果想搜索指定类型 :vim pattern %:h/*.c|copen
+
+```sh
+多个指定类型  :vim pattern %:h/*.c %:h/*.h|copen
+```
+
+注： vimgrep的缩写为vim， vimgrep搜索结果默认不打开quickfix，可以使用 |copen 显式的打开。
+
+## Tagbar插件使用说明
+
+1. Tagbar 列表中，如果前面有一个减号‘-’的标志，表示其为static的。
+
+2. 在Tagbar列列中，查看函数分为“跳转到函数”和“预览函数”
+
+   在Tagbar中按回车，光标会跳转到函数的定义编辑窗口，而按下 p 键，则光标仍然在Tagbar列表窗口中。
+
+
+
+## vim 修改点跳转与回退
+
+Ctrl-O
+
+Ctrl-I
+
+
+
+g;  
+
+g,
+
+
+
+注： :h g;       
